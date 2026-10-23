@@ -1,1198 +1,2491 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aswin A | Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ASWIN A // 3D Spatial Data & Systems Observatory</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-        :root {
-            --bg-page: #08090d;
-            --bg-surface: #0e1117;
-            --bg-elevated: #151922;
-            --bg-code: #0c0f16;
-            --border: #1e2433;
-            --border-focus: #d4a853;
-            --text-heading: #f0ece4;
-            --text-body: #9ca3b4;
-            --text-muted: #5c6478;
-            --accent: #d4a853;
-            --accent-dim: rgba(212,168,83,0.12);
-            --accent-glow: rgba(212,168,83,0.25);
-            --green: #5cb85c;
-            --red: #e05555;
-            --blue: #5599e0;
-            --purple: #b07cd8;
-            --cyan: #50c0d0;
-            --orange: #d09050;
-            --yellow: #e0c050;
-            --sidebar-w: 250px;
-            --header-h: 60px;
-        }
+  <!-- Three.js r128 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-        body.light-mode {
-            --bg-page: #f5f3ee;
-            --bg-surface: #ffffff;
-            --bg-elevated: #faf8f5;
-            --bg-code: #1a1e2e;
-            --border: #e0dcd4;
-            --border-focus: #b08930;
-            --text-heading: #111318;
-            --text-body: #5a5f6e;
-            --text-muted: #8a8e9a;
-            --accent: #b08930;
-            --accent-dim: rgba(176,137,48,0.08);
-            --accent-glow: rgba(176,137,48,0.15);
-        }
-
-        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-        body {
-            font-family: 'DM Sans', -apple-system, sans-serif;
-            background: var(--bg-page);
-            color: var(--text-body);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
-
-        /* ─── Sidebar ─── */
-        .sidebar {
-            position: fixed; top: 0; left: 0;
-            width: var(--sidebar-w); height: 100vh;
-            background: var(--bg-surface);
-            border-right: 1px solid var(--border);
-            padding: 2rem 1.5rem;
-            display: flex; flex-direction: column;
-            z-index: 1000;
-            transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-        }
-        .sidebar-logo {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.15rem; font-weight: 700;
-            color: var(--accent); margin-bottom: 0.25rem;
-            letter-spacing: -0.02em;
-        }
-        .sidebar-tagline {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem; color: var(--text-muted);
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .sidebar-nav { list-style: none; flex: 1; }
-        .sidebar-nav li { margin-bottom: 0.15rem; }
-        .sidebar-nav a {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.6rem 0.75rem;
-            color: var(--text-muted);
-            text-decoration: none; font-size: 0.88rem; font-weight: 500;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        .sidebar-nav a:hover, .sidebar-nav a.active {
-            color: var(--text-heading);
-            background: var(--accent-dim);
-        }
-        .sidebar-nav a .nav-icon {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem; color: var(--accent); width: 18px;
-        }
-        .sidebar-footer {
-            border-top: 1px solid var(--border);
-            padding-top: 1.25rem;
-            display: flex; flex-direction: column; gap: 0.75rem;
-        }
-        .sidebar-footer a {
-            color: var(--text-muted); text-decoration: none;
-            font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;
-            transition: color 0.2s;
-        }
-        .sidebar-footer a:hover { color: var(--accent); }
-        .theme-toggle {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.4rem 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s;
-            width: fit-content;
-        }
-        .theme-toggle:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* ─── Mobile Header ─── */
-        .mobile-header {
-            display: none;
-            position: fixed; top: 0; left: 0; right: 0;
-            height: var(--header-h);
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
-            padding: 0 1.25rem;
-            align-items: center; justify-content: space-between;
-            z-index: 1001;
-        }
-        .mobile-logo {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700; color: var(--accent); font-size: 1rem;
-        }
-        .hamburger {
-            background: none; border: none; color: var(--text-heading);
-            font-size: 1.5rem; cursor: pointer; padding: 0.25rem;
-        }
-        .sidebar-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 999;
-        }
-
-        /* ─── Main Content ─── */
-        .main {
-            margin-left: var(--sidebar-w);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 2.5rem;
-        }
-        section {
-            padding: 5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        section:last-of-type { border-bottom: none; }
-
-        /* ─── Hero ─── */
-        .hero {
-            padding: 6rem 0 5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-        .hero-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-        .hero-name {
-            font-family: 'Instrument Serif', serif;
-            font-size: 3.5rem;
-            font-weight: 400;
-            color: var(--text-heading);
-            line-height: 1.1;
-            margin-bottom: 1.25rem;
-            letter-spacing: -0.02em;
-        }
-        .hero-name em {
-            color: var(--accent);
-            font-style: italic;
-        }
-        .hero-desc {
-            font-size: 1rem;
-            color: var(--text-body);
-            line-height: 1.8;
-            margin-bottom: 2rem;
-            max-width: 460px;
-        }
-        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn-primary {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem; font-weight: 600;
-            background: var(--accent);
-            color: #08090d;
-            padding: 0.7rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            border: none; cursor: pointer;
-            transition: all 0.25s ease;
-            letter-spacing: 0.02em;
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px var(--accent-glow);
-        }
-        .btn-outline {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem; font-weight: 500;
-            background: transparent;
-            color: var(--text-body);
-            padding: 0.7rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .btn-outline:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* Terminal */
-        .terminal {
-            background: var(--bg-code);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .terminal-bar {
-            display: flex; align-items: center; gap: 7px;
-            padding: 0.75rem 1rem;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid var(--border);
-        }
-        .terminal-dot {
-            width: 11px; height: 11px; border-radius: 50%;
-        }
-        .terminal-dot.red { background: #ff5f57; }
-        .terminal-dot.yellow { background: #febc2e; }
-        .terminal-dot.green { background: #28c840; }
-        .terminal-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-left: auto;
-        }
-        .terminal-body {
-            padding: 1.25rem 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
-            line-height: 1.85;
-            min-height: 260px;
-        }
-        .terminal-body .prompt { color: var(--accent); }
-        .terminal-body .kw { color: var(--purple); }
-        .terminal-body .cls { color: var(--cyan); }
-        .terminal-body .fn { color: var(--blue); }
-        .terminal-body .str { color: var(--green); }
-        .terminal-body .cmt { color: var(--text-muted); }
-        .terminal-body .var { color: var(--orange); }
-        .terminal-body .op { color: var(--text-muted); }
-        .terminal-body .dec { color: var(--yellow); }
-        .cursor {
-            display: inline-block;
-            width: 8px; height: 15px;
-            background: var(--accent);
-            vertical-align: text-bottom;
-            animation: blink 1s step-end infinite;
-            margin-left: 2px;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-        /* ─── Stats ─── */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        .stat {
-            text-align: center;
-            padding: 1.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-surface);
-            transition: border-color 0.3s;
-        }
-        .stat:hover { border-color: var(--accent); }
-        .stat-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-        }
-        .stat-label {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* ─── Section Headings ─── */
-        .section-head {
-            margin-bottom: 2.5rem;
-        }
-        .section-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-        }
-        .section-title {
-            font-family: 'Instrument Serif', serif;
-            font-size: 2.25rem;
-            font-weight: 400;
-            color: var(--text-heading);
-            letter-spacing: -0.01em;
-        }
-        .section-sub {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            max-width: 500px;
-        }
-
-        /* ─── Skills Carousel ─── */
-        .skills-carousel {
-            overflow: hidden;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-        .skills-carousel::before,
-        .skills-carousel::after {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0;
-            width: 60px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .skills-carousel::before {
-            left: 0;
-            background: linear-gradient(to right, var(--bg-page), transparent);
-        }
-        .skills-carousel::after {
-            right: 0;
-            background: linear-gradient(to left, var(--bg-page), transparent);
-        }
-        .skills-track {
-            display: flex;
-            gap: 1.25rem;
-            width: max-content;
-            animation: skillScroll 30s linear infinite;
-        }
-        .skills-carousel:hover .skills-track {
-            animation-play-state: paused;
-        }
-        @keyframes skillScroll {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .skill-card {
-            min-width: 280px;
-            max-width: 280px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--bg-surface);
-            flex-shrink: 0;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .skill-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        }
-        .skill-card-head {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .skill-card-icon {
-            font-size: 1.2rem;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--accent-dim);
-            border-radius: 8px;
-            flex-shrink: 0;
-        }
-        .skill-card-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--accent);
-            letter-spacing: 0.02em;
-        }
-        .skill-card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.45rem;
-        }
-        .skill-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            padding: 0.3rem 0.6rem;
-            background: var(--accent-dim);
-            color: var(--text-body);
-            border-radius: 4px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .skill-tag:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* ─── Projects ─── */
-        .projects-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .project-item {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 1.5rem;
-            align-items: start;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-surface);
-            transition: all 0.3s ease;
-        }
-        .project-item:hover {
-            border-color: var(--accent);
-            transform: translateX(4px);
-        }
-        .project-name {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-heading);
-            margin-bottom: 0.5rem;
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-        .project-name a {
-            color: inherit; text-decoration: none;
-            transition: color 0.2s;
-        }
-        .project-name a:hover { color: var(--accent); }
-        .project-desc {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 0.75rem;
-        }
-        .project-meta {
-            display: flex; gap: 1rem; flex-wrap: wrap;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        .project-meta span { display: flex; align-items: center; gap: 0.3rem; }
-        .lang-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .project-link {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            text-decoration: none;
-            padding: 0.4rem 0.8rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            white-space: nowrap;
-            transition: all 0.2s;
-            align-self: center;
-        }
-        .project-link:hover {
-            border-color: var(--accent);
-            background: var(--accent-dim);
-        }
-        .show-more-wrap {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-        .loading-msg {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 3rem;
-        }
-
-        /* ─── Contact ─── */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        .contact-links {
-            display: flex; flex-direction: column; gap: 1.25rem;
-        }
-        .contact-link-item {
-            display: flex; align-items: center; gap: 1rem;
-            padding: 1rem 1.25rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            text-decoration: none;
-            background: var(--bg-surface);
-            transition: all 0.25s;
-        }
-        .contact-link-item:hover {
-            border-color: var(--accent);
-            transform: translateX(4px);
-        }
-        .contact-link-icon {
-            font-size: 1.25rem;
-            width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            background: var(--accent-dim);
-            border-radius: 8px;
-            flex-shrink: 0;
-        }
-        .contact-link-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 0.15rem;
-        }
-        .contact-link-value {
-            font-size: 0.9rem;
-            color: var(--text-heading);
-            font-weight: 500;
-        }
-        .contact-form-wrap {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.75rem;
-            background: var(--bg-surface);
-        }
-        .contact-form-wrap h3 {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 1.25rem;
-        }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label {
-            display: block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 0.4rem;
-            letter-spacing: 0.03em;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            background: var(--bg-page);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.7rem 0.9rem;
-            color: var(--text-heading);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-dim);
-        }
-        .form-group textarea { resize: vertical; min-height: 120px; }
-        .form-status {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            margin-top: 0.75rem;
-            display: none;
-        }
-        .form-status.success { color: var(--green); display: block; }
-        .form-status.error { color: var(--red); display: block; }
-
-        /* ─── Footer ─── */
-        .footer {
-            padding: 2.5rem 0;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-        .footer p {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-        .footer .footer-quote {
-            font-family: 'Instrument Serif', serif;
-            font-style: italic;
-            font-size: 1rem;
-            color: var(--text-body);
-            margin-bottom: 1rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ─── Animations ─── */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ─── Responsive ─── */
-        @media (max-width: 1024px) {
-            .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
-            .hero-name { font-size: 2.75rem; }
-        }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay.show { display: block; }
-            .mobile-header { display: flex; }
-            .main { margin-left: 0; margin-top: var(--header-h); }
-            .container { padding: 0 1.25rem; }
-            section { padding: 3.5rem 0; }
-            .hero { padding: 3.5rem 0 3rem; }
-            .hero-name { font-size: 2.25rem; }
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
-            .contact-grid { grid-template-columns: 1fr; }
-            .project-item { grid-template-columns: 1fr; }
-            .project-link { justify-self: start; }
-            .section-title { font-size: 1.75rem; }
-            .skill-card {
-                min-width: 250px;
-                max-width: 250px;
-                padding: 1.25rem;
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#090b10',
+            graphite: '#111520',
+            slatepanel: '#161b2a',
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706'
+            },
+            cobalt: {
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb'
+            },
+            violet: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed'
+            },
+            emerald: {
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669'
             }
-            .skills-carousel::before,
-            .skills-carousel::after {
-                width: 30px;
-            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
         }
-        @media (max-width: 480px) {
-            .hero-name { font-size: 1.85rem; }
-            .stats-row { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-            .stat { padding: 1.25rem 0.75rem; }
-            .stat-num { font-size: 1.4rem; }
-        }
-    </style>
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #090b10;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      cursor: grab;
+    }
+
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+
+    /* Subtle Technical CRT / Blueprint Overlay */
+    .hud-grid-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background-image: 
+        radial-gradient(circle at 50% 50%, transparent 55%, rgba(9, 11, 16, 0.72) 100%),
+        linear-gradient(to right, rgba(59, 130, 246, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+    }
+
+    /* Glassmorphic Engineering Panels */
+    .hud-panel {
+      background: rgba(17, 21, 32, 0.84);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .hud-panel-amber {
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.12), inset 0 1px 0 rgba(245, 158, 11, 0.15);
+    }
+
+    /* Custom Scrollbars for Inspector & Query Drawer */
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(9, 11, 16, 0.6);
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.28);
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(245, 158, 11, 0.6);
+    }
+
+    /* World-to-Screen 3D Floating Node Badges */
+    .node-badge {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      will-change: left, top, opacity;
+    }
+
+    .node-badge:hover {
+      z-index: 40 !important;
+      transform: translate(-50%, -104%) scale(1.04);
+    }
+
+    .node-badge.active-badge {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.45) !important;
+      background: rgba(17, 21, 32, 0.96) !important;
+    }
+
+    /* Corner Tech Brackets */
+    .tech-corner {
+      position: relative;
+    }
+    .tech-corner::before,
+    .tech-corner::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+    }
+    .tech-corner::before {
+      top: -1px;
+      left: -1px;
+      border-top: 2px solid #f59e0b;
+      border-left: 2px solid #f59e0b;
+    }
+    .tech-corner::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 2px solid #3b82f6;
+      border-right: 2px solid #3b82f6;
+    }
+
+    /* Range Slider Styling */
+    input[type=range].telemetry-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(15, 23, 42, 0.9);
+      height: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    input[type=range].telemetry-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f59e0b;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+      border: 2px solid #fff;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.85); opacity: 0.9; }
+      100% { transform: scale(1.75); opacity: 0; }
+    }
+    .animate-pulse-ring {
+      animation: pulse-ring 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    .selectable-text {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-obsidian text-slate-200 antialiased selection:bg-amber-500 selection:text-obsidian">
 
-<!-- Mobile Header -->
-<header class="mobile-header">
-    <div class="mobile-logo">~/aswin</div>
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
-</header>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <!-- 3D THREE.JS VIEWPORT CONTAINER -->
+  <div id="canvas-container" aria-label="Interactive 3D Spatial Data Analytics and Software Engineering Environment"></div>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">~/aswin</div>
-    <div class="sidebar-tagline">Backend Developer · ECE Student</div>
-    <ul class="sidebar-nav">
-        <li><a href="#about" class="active"><span class="nav-icon">01</span> About</a></li>
-        <li><a href="#skills"><span class="nav-icon">02</span> Skills</a></li>
-        <li><a href="#projects"><span class="nav-icon">03</span> Projects</a></li>
-        <li><a href="#contact"><span class="nav-icon">04</span> Contact</a></li>
-    </ul>
-    <div class="sidebar-footer">
-        <a href="https://github.com/ASWINa1636" target="_blank">github.com/ASWINa1636</a>
-        <a href="mailto:aswinanand1636@gmail.com">aswinanand1636@gmail.com</a>
-        <button class="theme-toggle" onclick="toggleTheme()">◐ theme</button>
+  <!-- SUBTLE VIGNETTE & BLUEPRINT OVERLAY -->
+  <div class="hud-grid-overlay"></div>
+
+  <!-- 3D WORLD-TO-SCREEN FLOATING TELEMETRY LABELS CONTAINER -->
+  <div id="labels-layer" class="fixed inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+  <!-- 3D BAR CHART FLOATING METRIC READOUT OVER STATION 02 -->
+  <div id="bi-floating-banner" class="fixed pointer-events-none z-10 hidden md:flex flex-col items-center transition-opacity duration-300" style="left: 25%; top: 25%; transform: translate(-50%, -100%);">
+    <div class="hud-panel px-2.5 py-1 rounded border border-amber-500/40 text-[10px] font-mono text-amber-400 flex items-center gap-1.5 shadow-lg">
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+      <span id="bi-banner-label">3D BI MATRIX: DATA VOLUME (TB/d)</span>
     </div>
-</aside>
+  </div>
 
-<!-- Main -->
-<div class="main">
+  <!-- ===================================================================== -->
+  <!-- TOP COMMAND & TELEMETRY HUD BAR                                       -->
+  <!-- ===================================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-30 p-2.5 md:px-5 md:py-3 pointer-events-none flex flex-wrap items-center justify-between gap-2">
+    
+    <!-- Left Identity & Coordinates Brand Block -->
+    <div class="hud-panel tech-corner pointer-events-auto rounded-lg px-3.5 py-2 flex items-center gap-3.5 border border-slate-700/60">
+      <button onclick="flyToStation(1)" class="group relative flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500/20 via-cobalt-500/15 to-violet-500/20 border border-amber-500/40 hover:border-amber-400 transition-all" title="Fly to Core Architect Monolith">
+        <span class="font-display font-bold text-amber-400 text-sm tracking-tighter group-hover:scale-110 transition-transform">AA</span>
+        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-obsidian"></span>
+      </button>
 
-    <!-- Hero -->
-    <section class="hero" id="about">
-        <div class="container">
-            <div class="hero-grid">
-                <div class="fade-in">
-                    <div class="hero-label">// backend developer</div>
-                    <h1 class="hero-name">Hi, I'm <em>Aswin A</em></h1>
-                    <p class="hero-desc">
-                        Electronics &amp; Communication Engineering student based in Chennai, building
-                        CLI tools, automation systems, and backend services. I turn real-world problems
-                        into clean, working code — from NLP pipelines to system utilities.
-                    </p>
-                    <div class="hero-actions">
-                        <a href="#projects" class="btn-primary">View Projects →</a>
-                        <a href="assets/resume.pdf" download class="btn-outline">↓ Resume</a>
-                    </div>
-                </div>
-                <div class="terminal fade-in" style="transition-delay:0.15s">
-                    <div class="terminal-bar">
-                        <span class="terminal-dot red"></span>
-                        <span class="terminal-dot yellow"></span>
-                        <span class="terminal-dot green"></span>
-                        <span class="terminal-title">aswin.py</span>
-                    </div>
-                    <div class="terminal-body" id="terminalCode">
-                        <span class="prompt">$ </span>python3 aswin.py<br><br>
-                        <span class="kw">class</span> <span class="cls">AswinA</span>:<br>
-                        &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="var">self</span>):<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">self</span>.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="str">"Aswin A"</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">self</span>.role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="str">"Backend Dev"</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">self</span>.location&nbsp;&nbsp;&nbsp;= <span class="str">"Chennai, IN"</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">self</span>.focus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= [<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"CLI tools"</span>,<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Automation"</span>,<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"NLP / Systems"</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;]<br><br>
-                        <span class="cmt"># currently shipping tools</span><br>
-                        <span class="cmt"># that solve real problems</span><br><br>
-                        <span class="prompt">$ </span><span class="cursor"></span>
-                    </div>
-                </div>
-            </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-display font-bold text-xs sm:text-sm md:text-base tracking-wider text-white uppercase">
+            ASWIN A <span class="text-amber-400 font-mono font-normal text-xs">// SPATIAL DATA &amp; SYSTEMS OBSERVATORY</span>
+          </h1>
+          <span class="hidden xl:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 font-mono text-[10px] text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYS.ONLINE
+          </span>
         </div>
-    </section>
-
-    <!-- Stats -->
-    <section style="padding:3rem 0; border-bottom:1px solid var(--border);">
-        <div class="container">
-            <div class="stats-row fade-in">
-                <div class="stat">
-                    <div class="stat-num">10+</div>
-                    <div class="stat-label">Projects Built</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-num">11+</div>
-                    <div class="stat-label">GitHub Repos</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-num">5+</div>
-                    <div class="stat-label">Core Skills</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-num">∞</div>
-                    <div class="stat-label">Curiosity</div>
-                </div>
-            </div>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-mono text-slate-400">
+          <span><i class="fa-solid fa-microchip text-amber-400 mr-1"></i>Data Analyst &bull; Data Engineer &bull; SWE</span>
+          <span class="hidden sm:inline text-slate-600">|</span>
+          <span class="hidden sm:inline text-cobalt-400">B.Tech ECE @ SRMIST Chennai '27</span>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- Skills -->
-    <section id="skills">
-        <div class="container">
-            <div class="section-head fade-in">
-                <div class="section-num">02</div>
-                <h2 class="section-title">Technical Skills</h2>
-                <p class="section-sub">Languages, frameworks, and tools I work with daily.</p>
-            </div>
-            <div class="skills-carousel fade-in" style="transition-delay:0.1s">
-                <div class="skills-track" id="skillsTrack">
-                    <!-- Original Set -->
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">⚡</span>
-                            <span class="skill-card-title">Languages</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">C++</span>
-                            <span class="skill-tag">SQL</span>
-                            <span class="skill-tag">HTML/CSS</span>
-                            <span class="skill-tag">Bash</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🔧</span>
-                            <span class="skill-card-title">Backend &amp; Frameworks</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Flask</span>
-                            <span class="skill-tag">Streamlit</span>
-                            <span class="skill-tag">REST APIs</span>
-                            <span class="skill-tag">Session Mgmt</span>
-                            <span class="skill-tag">Linux Automation</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🗄️</span>
-                            <span class="skill-card-title">Data &amp; Storage</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">SQLite</span>
-                            <span class="skill-tag">MySQL</span>
-                            <span class="skill-tag">Schema Design</span>
-                            <span class="skill-tag">CRUD Ops</span>
-                            <span class="skill-tag">File I/O</span>
-                            <span class="skill-tag">Excel</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">📚</span>
-                            <span class="skill-card-title">Libraries</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Pandas</span>
-                            <span class="skill-tag">NumPy</span>
-                            <span class="skill-tag">PyMuPDF</span>
-                            <span class="skill-tag">python-docx</span>
-                            <span class="skill-tag">spaCy</span>
-                            <span class="skill-tag">SpeechRecognition</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🛠️</span>
-                            <span class="skill-card-title">Tools &amp; Workflow</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Git</span>
-                            <span class="skill-tag">GitHub</span>
-                            <span class="skill-tag">VS Code</span>
-                            <span class="skill-tag">Postman</span>
-                            <span class="skill-tag">Linux / Ubuntu</span>
-                            <span class="skill-tag">Power BI</span>
-                            <span class="skill-tag">TailScale</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">💡</span>
-                            <span class="skill-card-title">Concepts</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">DSA</span>
-                            <span class="skill-tag">OOP</span>
-                            <span class="skill-tag">System Design</span>
-                            <span class="skill-tag">Modular Arch</span>
-                            <span class="skill-tag">Memory Mgmt</span>
-                            <span class="skill-tag">Server Building</span>
-                        </div>
-                    </div>
-                    <!-- Duplicate Set for seamless loop -->
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">⚡</span>
-                            <span class="skill-card-title">Languages</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">C++</span>
-                            <span class="skill-tag">SQL</span>
-                            <span class="skill-tag">HTML/CSS</span>
-                            <span class="skill-tag">Bash</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🔧</span>
-                            <span class="skill-card-title">Backend &amp; Frameworks</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Flask</span>
-                            <span class="skill-tag">Streamlit</span>
-                            <span class="skill-tag">REST APIs</span>
-                            <span class="skill-tag">Session Mgmt</span>
-                            <span class="skill-tag">Linux Automation</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🗄️</span>
-                            <span class="skill-card-title">Data &amp; Storage</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">SQLite</span>
-                            <span class="skill-tag">MySQL</span>
-                            <span class="skill-tag">Schema Design</span>
-                            <span class="skill-tag">CRUD Ops</span>
-                            <span class="skill-tag">File I/O</span>
-                            <span class="skill-tag">Excel</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">📚</span>
-                            <span class="skill-card-title">Libraries</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Pandas</span>
-                            <span class="skill-tag">NumPy</span>
-                            <span class="skill-tag">PyMuPDF</span>
-                            <span class="skill-tag">python-docx</span>
-                            <span class="skill-tag">spaCy</span>
-                            <span class="skill-tag">SpeechRecognition</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">🛠️</span>
-                            <span class="skill-card-title">Tools &amp; Workflow</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">Git</span>
-                            <span class="skill-tag">GitHub</span>
-                            <span class="skill-tag">VS Code</span>
-                            <span class="skill-tag">Postman</span>
-                            <span class="skill-tag">Linux / Ubuntu</span>
-                            <span class="skill-tag">Power BI</span>
-                            <span class="skill-tag">TailScale</span>
-                        </div>
-                    </div>
-                    <div class="skill-card">
-                        <div class="skill-card-head">
-                            <span class="skill-card-icon">💡</span>
-                            <span class="skill-card-title">Concepts</span>
-                        </div>
-                        <div class="skill-card-tags">
-                            <span class="skill-tag">DSA</span>
-                            <span class="skill-tag">OOP</span>
-                            <span class="skill-tag">System Design</span>
-                            <span class="skill-tag">Modular Arch</span>
-                            <span class="skill-tag">Memory Mgmt</span>
-                            <span class="skill-tag">Server Building</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Center Live Telemetry Readout Pill (Desktop) -->
+    <div class="hidden 2xl:flex hud-panel pointer-events-auto rounded-lg px-4 py-2 items-center gap-5 font-mono text-xs border border-slate-800">
+      <div>
+        <div class="text-[9px] text-slate-500 uppercase">CAM VECTOR (X,Y,Z)</div>
+        <div id="hud-cam-coords" class="text-amber-400 font-semibold">0.0, 22.0, 32.0</div>
+      </div>
+      <div class="h-6 w-px bg-slate-800"></div>
+      <div>
+        <div class="text-[9px] text-slate-500 uppercase">ETL PIPELINE FLUX</div>
+        <div id="hud-flux-readout" class="text-emerald-400 font-semibold">4.82 GB/s [NOMINAL]</div>
+      </div>
+      <div class="h-6 w-px bg-slate-800"></div>
+      <div>
+        <div class="text-[9px] text-slate-500 uppercase">ACTIVE NODE</div>
+        <div id="hud-active-node" class="text-cobalt-400 font-semibold">ST-01 // CORE MONOLITH</div>
+      </div>
+    </div>
+
+    <!-- Right Action Controls: CAD Wireframe, Surge Simulator, SQL Query Drawer, GitHub -->
+    <div class="hud-panel pointer-events-auto rounded-lg p-1.5 flex items-center gap-1.5 sm:gap-2">
+      <!-- CAD Wireframe / Schematic Toggle -->
+      <button id="btn-wireframe" onclick="toggleWireframeMode()" class="px-2.5 py-1.5 rounded-md font-mono text-[11px] font-medium bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/70 transition-all flex items-center gap-1.5" title="Shortcut: [W] Toggle CAD Wireframe / Schematic Mode">
+        <i class="fa-solid fa-cube text-cobalt-400"></i>
+        <span class="hidden sm:inline">CAD WIREFRAME</span>
+        <span id="wireframe-badge" class="px-1 rounded text-[9px] bg-slate-900 text-slate-400">OFF</span>
+      </button>
+
+      <!-- Surge Simulator Button -->
+      <button id="btn-surge" onclick="triggerPipelineSurge()" class="px-2.5 py-1.5 rounded-md font-mono text-[11px] font-medium bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 transition-all flex items-center gap-1.5 shadow-sm" title="Shortcut: [S] Trigger High-Throughput Particle Data Burst across 3D ETL Pipelines">
+        <i class="fa-solid fa-bolt text-amber-400"></i>
+        <span class="hidden sm:inline">SURGE SIMULATOR</span>
+      </button>
+
+      <!-- Interactive SQL / Data Lake Query Drawer Trigger -->
+      <button onclick="toggleSqlModal(true)" class="px-2.5 py-1.5 rounded-md font-mono text-[11px] font-medium bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 transition-all flex items-center gap-1.5" title="Shortcut: [Q] Open Interactive SQL & Python Data Lake Query Terminal">
+        <i class="fa-solid fa-terminal text-violet-400"></i>
+        <span>QUERY DATA LAKE</span>
+      </button>
+
+      <!-- Direct GitHub Link -->
+      <a href="https://github.com/ASWINa1636" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-md font-mono text-[11px] font-medium bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-600/60 transition-all flex items-center gap-1.5" title="Open github.com/ASWINa1636">
+        <i class="fa-brands fa-github text-sm"></i>
+        <span class="hidden md:inline">ASWINa1636</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- LEFT FLOATING QUICK-TELEMETRY & 3D BI METRIC CONTROLLER               -->
+  <!-- ===================================================================== -->
+  <aside class="fixed left-3 top-20 z-20 hidden lg:flex flex-col gap-2.5 w-64 pointer-events-none">
+    
+    <!-- Spatial Navigation Guide & Live Telemetry Card -->
+    <div class="hud-panel pointer-events-auto rounded-lg p-3 border border-slate-800/80">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-amber-400 font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-satellite-dish"></i> SPATIAL TELEMETRY
+        </span>
+        <span class="font-mono text-[10px] text-slate-400" id="fps-counter">60 FPS</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono mb-2.5">
+        <div class="bg-obsidian/70 p-2 rounded border border-slate-800/80">
+          <div class="text-[9px] text-slate-500">GITHUB REPOS</div>
+          <div class="text-white font-bold text-sm">44 <span class="text-[10px] text-emerald-400 font-normal">PUBLIC</span></div>
         </div>
-    </section>
-
-    <!-- Projects -->
-    <section id="projects">
-        <div class="container">
-            <div class="section-head fade-in">
-                <div class="section-num">03</div>
-                <h2 class="section-title">Featured Projects</h2>
-                <p class="section-sub">Recent work pulled from my GitHub — tools, automations, and experiments.</p>
-            </div>
-            <div class="projects-list" id="projectsContainer">
-                <div class="loading-msg">⏳ Fetching repositories from GitHub...</div>
-            </div>
-            <div class="show-more-wrap">
-                <button id="showMoreBtn" class="btn-outline" style="display:none; font-family:'JetBrains Mono',monospace; font-size:0.8rem; padding:0.6rem 1.25rem; cursor:pointer;">
-                    Show More
-                </button>
-            </div>
+        <div class="bg-obsidian/70 p-2 rounded border border-slate-800/80">
+          <div class="text-[9px] text-slate-500">HF DATASET</div>
+          <div class="text-violet-400 font-bold text-sm">MiMo-RL <span class="text-[10px] text-slate-400 font-normal">SWE</span></div>
         </div>
-    </section>
+      </div>
 
-    <!-- Contact -->
-    <section id="contact">
-        <div class="container">
-            <div class="section-head fade-in">
-                <div class="section-num">04</div>
-                <h2 class="section-title">Get In Touch</h2>
-                <p class="section-sub">Open to internships, collaborations, and open-source contributions.</p>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-links fade-in">
-                    <a href="mailto:aswinanand1636@gmail.com" class="contact-link-item">
-                        <div class="contact-link-icon">✉</div>
-                        <div>
-                            <div class="contact-link-label">EMAIL</div>
-                            <div class="contact-link-value">aswinanand1636@gmail.com</div>
-                        </div>
-                    </a>
-                    <a href="https://github.com/ASWINa1636" target="_blank" class="contact-link-item">
-                        <div class="contact-link-icon">⌨</div>
-                        <div>
-                            <div class="contact-link-label">GITHUB</div>
-                            <div class="contact-link-value">github.com/ASWINa1636</div>
-                        </div>
-                    </a>
-                    <a href="https://www.linkedin.com/in/aswin-a-954107292/" target="_blank" class="contact-link-item">
-                        <div class="contact-link-icon">◎</div>
-                        <div>
-                            <div class="contact-link-label">LINKEDIN</div>
-                            <div class="contact-link-value">linkedin.com/in/aswin-a</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="contact-form-wrap fade-in" style="transition-delay:0.1s">
-                    <h3>// send a message</h3>
-                    <form action="https://api.web3forms.com/submit" method="POST" id="contactForm">
-                        <input type="hidden" name="access_key" value="11e1421d-0fc0-4815-90da-d78d2f7a283c">
-                        <input type="hidden" name="subject" value="New Contact from Portfolio">
-                        <input type="hidden" name="from_name" value="Portfolio Contact Form">
-                        <div class="form-group">
-                            <label for="name">name</label>
-                            <input type="text" id="name" name="name" placeholder="Your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">email</label>
-                            <input type="email" id="email" name="email" placeholder="you@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">message</label>
-                            <textarea id="message" name="message" placeholder="What would you like to discuss?" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary" style="width:100%;">Send Message →</button>
-                        <p id="formStatus" class="form-status"></p>
-                    </form>
-                </div>
-            </div>
+      <div class="text-[11px] text-slate-400 leading-relaxed space-y-1 font-mono border-t border-slate-800/80 pt-2">
+        <div class="flex items-center justify-between">
+          <span><i class="fa-solid fa-computer-mouse text-cobalt-400 w-4"></i>Left Drag</span>
+          <span class="text-slate-300">Orbit 3D Scene</span>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-quote">"Build it now — the past is the only thing that remains."</p>
-            <p>© 2025 Aswin A · Built with vanilla HTML, CSS &amp; JS</p>
+        <div class="flex items-center justify-between">
+          <span><i class="fa-solid fa-arrows-up-down-left-right text-amber-400 w-4"></i>Right Drag</span>
+          <span class="text-slate-300">Pan Floor Target</span>
         </div>
-    </footer>
-</div>
+        <div class="flex items-center justify-between">
+          <span><i class="fa-solid fa-hand-pointer text-emerald-400 w-4"></i>Click Node</span>
+          <span class="text-slate-300">Fly &amp; Inspect</span>
+        </div>
+      </div>
+    </div>
 
-<script>
-    // ── GitHub Repos ──
-    const GITHUB_USER = 'ASWINa1636';
-    let allRepos = [];
-    let showCount = 6;
-    const langColors = {
-        Python: '#3572A5', JavaScript: '#f1e05a', HTML: '#e34c26',
-        CSS: '#563d7c', 'C++': '#f34b7d', C: '#555555',
-        Java: '#b07219', Shell: '#89e051', TypeScript: '#2b7489',
-        Go: '#00ADD8', Rust: '#dea584', Jupyter: '#DA5B0B'
+    <!-- Station 02 Live 3D Bar Chart Metric Controller -->
+    <div class="hud-panel pointer-events-auto rounded-lg p-3 border border-slate-800/80">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-cobalt-400 font-semibold">
+          <i class="fa-solid fa-chart-column mr-1"></i>3D BI FOUNDRY METRIC
+        </span>
+        <button onclick="flyToStation(2)" class="text-[10px] font-mono text-amber-400 hover:underline">FLY TO ST-02 &rarr;</button>
+      </div>
+      <p class="text-[11px] text-slate-400 mb-2 leading-tight">
+        Morph the physical 3D volumetric bar chart towers at Station 02 in real time:
+      </p>
+      <div class="flex flex-col gap-1 font-mono text-[11px]">
+        <button onclick="setBIMetric('volume')" id="metric-btn-volume" class="metric-btn text-left px-2.5 py-1.5 rounded border border-amber-500/50 bg-amber-500/15 text-amber-300 flex items-center justify-between transition-all">
+          <span>01. Data Volume Processed</span>
+          <span class="text-[10px] font-bold">TB/s</span>
+        </button>
+        <button onclick="setBIMetric('accuracy')" id="metric-btn-accuracy" class="metric-btn text-left px-2.5 py-1.5 rounded border border-slate-800 bg-obsidian/60 text-slate-400 hover:text-slate-200 flex items-center justify-between transition-all">
+          <span>02. Model Accuracy %</span>
+          <span class="text-[10px] font-bold">R&sup2;/F1</span>
+        </button>
+        <button onclick="setBIMetric('speedup')" id="metric-btn-speedup" class="metric-btn text-left px-2.5 py-1.5 rounded border border-slate-800 bg-obsidian/60 text-slate-400 hover:text-slate-200 flex items-center justify-between transition-all">
+          <span>03. Query &amp; ETL Speedup</span>
+          <span class="text-[10px] font-bold">X-FAST</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pipeline Particle Throughput Controller -->
+    <div class="hud-panel pointer-events-auto rounded-lg p-3 border border-slate-800/80">
+      <div class="flex items-center justify-between mb-1 font-mono text-[10px]">
+        <span class="text-emerald-400 uppercase font-semibold"><i class="fa-solid fa-wave-square mr-1"></i>ETL CONDUIT SPEED</span>
+        <span id="throughput-val" class="text-white font-bold">1.0x</span>
+      </div>
+      <input id="throughput-slider" type="range" min="0.2" max="4.0" step="0.1" value="1.0" oninput="updateThroughputSpeed(this.value)" class="telemetry-slider w-full my-1.5" />
+      <div class="flex justify-between text-[9px] font-mono text-slate-500">
+        <span>IDLE (0.2x)</span>
+        <span>NOMINAL (1.0x)</span>
+        <span>OVERCLOCK (4.0x)</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- RIGHT-SIDE COLLAPSIBLE ENGINEERING INSPECTOR PANEL                    -->
+  <!-- ===================================================================== -->
+  <aside id="inspector-panel" class="fixed top-16 right-3 bottom-20 z-20 w-[calc(100vw-1.5rem)] sm:w-[430px] md:w-[460px] pointer-events-none flex flex-col transition-transform duration-300 translate-x-0">
+    
+    <!-- Collapse/Expand Floating Tab on Left Edge of Inspector -->
+    <button onclick="toggleInspector()" id="inspector-toggle-btn" class="pointer-events-auto absolute -left-9 top-3 w-9 h-10 hud-panel rounded-l-lg border-r-0 flex items-center justify-center text-amber-400 hover:text-white transition-colors" title="Collapse / Expand Station Inspector Panel">
+      <i id="inspector-toggle-icon" class="fa-solid fa-chevron-right text-xs"></i>
+    </button>
+
+    <div class="hud-panel tech-corner pointer-events-auto rounded-xl flex flex-col h-full overflow-hidden border border-slate-700/70">
+      
+      <!-- Station Telemetry Header -->
+      <div class="p-3.5 sm:p-4 bg-gradient-to-r from-obsidian/90 via-graphite/90 to-obsidian/90 border-b border-slate-800 flex items-start justify-between gap-2 shrink-0">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="insp-code" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40">
+              STATION 01 // CENTER [0, 0, 0]
+            </span>
+            <span id="insp-domain-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-cobalt-500/15 text-cobalt-400 border border-cobalt-500/30">
+              CORE IDENTITY
+            </span>
+          </div>
+          <h2 id="insp-title" class="font-display font-bold text-base sm:text-lg text-white leading-snug">
+            CORE ARCHITECT MONOLITH
+          </h2>
+          <p id="insp-subtitle" class="text-xs text-slate-400 font-mono">
+            Aswin A &mdash; Data Analyst, Data Engineer &amp; Software Engineer
+          </p>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button onclick="flyToStation(0)" class="px-2 py-1 rounded bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-mono text-[10px] border border-slate-700" title="Reset Camera to Full Orbital Overview">
+            <i class="fa-solid fa-expand mr-1"></i>OVERVIEW
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Station HTML5 Canvas Telemetry Mini-Oscilloscope -->
+      <div class="px-4 py-2.5 bg-obsidian/70 border-b border-slate-800/90 shrink-0">
+        <div class="flex items-center justify-between text-[10px] font-mono mb-1">
+          <span id="insp-chart-title" class="text-emerald-400 uppercase flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            LIVE TELEMETRY STREAM // MULTI-DOMAINHARMONICS
+          </span>
+          <span id="insp-chart-metric" class="text-slate-400">LATENCY: 0.8ms | 99.4% SYNC</span>
+        </div>
+        <canvas id="station-telemetry-canvas" width="400" height="58" class="w-full h-[58px] rounded bg-obsidian/90 border border-slate-800/80 block"></canvas>
+      </div>
+
+      <!-- Scrollable Station Content & Interactive Project Cards -->
+      <div id="insp-body" class="p-3.5 sm:p-4 overflow-y-auto custom-scroll flex-1 space-y-3.5 selectable-text">
+        <!-- Dynamically populated by selectStation() -->
+      </div>
+
+      <!-- Inspector Footer: Direct Profiles & Action Bar -->
+      <div class="px-4 py-2.5 bg-obsidian/90 border-t border-slate-800/90 flex items-center justify-between gap-2 text-xs font-mono shrink-0">
+        <div class="flex items-center gap-3">
+          <a href="https://github.com/ASWINa1636" target="_blank" rel="noopener noreferrer" class="text-slate-300 hover:text-amber-400 transition-colors flex items-center gap-1">
+            <i class="fa-brands fa-github"></i> GitHub
+          </a>
+          <a href="https://huggingface.co/datasets/Aswina1636/mimo-rl-curated-code" target="_blank" rel="noopener noreferrer" class="text-slate-300 hover:text-violet-400 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-database text-[10px]"></i> HuggingFace
+          </a>
+          <a href="mailto:aswina1636@gmail.com" class="text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-envelope text-[10px]"></i> Contact
+          </a>
+        </div>
+        <button onclick="toggleSqlModal(true)" class="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1">
+          <span>SQL Explorer</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- BOTTOM CAMERA FLIGHT DECK DOCK                                        -->
+  <!-- ===================================================================== -->
+  <nav aria-label="3D Station Camera Flight Deck" class="fixed bottom-2.5 left-2.5 right-2.5 z-30 pointer-events-none flex flex-col items-center">
+    <div class="hud-panel pointer-events-auto rounded-xl p-1.5 sm:px-3 sm:py-2 border border-slate-700/70 max-w-full overflow-x-auto custom-scroll flex items-center gap-1.5 sm:gap-2 shadow-2xl">
+      
+      <!-- Station Flight Buttons -->
+      <button onclick="flyToStation(1)" id="dock-btn-1" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-amber-500/20 border-amber-500 text-amber-300">
+        <span class="px-1 rounded bg-amber-500/30 text-[9px] text-amber-200">1</span>
+        <span>CORE ARCHITECT</span>
+      </button>
+
+      <button onclick="flyToStation(2)" id="dock-btn-2" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-cobalt-500/50">
+        <span class="px-1 rounded bg-cobalt-500/20 text-[9px] text-cobalt-300">2</span>
+        <span>DATA &amp; BI FOUNDRY</span>
+      </button>
+
+      <button onclick="flyToStation(3)" id="dock-btn-3" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-violet-500/50">
+        <span class="px-1 rounded bg-violet-500/20 text-[9px] text-violet-300">3</span>
+        <span>SWE &amp; AI RACK</span>
+      </button>
+
+      <button onclick="flyToStation(4)" id="dock-btn-4" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-emerald-500/50">
+        <span class="px-1 rounded bg-emerald-500/20 text-[9px] text-emerald-300">4</span>
+        <span>EDGE IOT RIG</span>
+      </button>
+
+      <button onclick="flyToStation(5)" id="dock-btn-5" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-amber-500/50">
+        <span class="px-1 rounded bg-amber-500/20 text-[9px] text-amber-300">5</span>
+        <span>SKILL MATRIX</span>
+      </button>
+
+      <div class="h-5 w-px bg-slate-700/70 shrink-0 mx-0.5"></div>
+
+      <!-- Orbit Overview -->
+      <button onclick="flyToStation(0)" id="dock-btn-0" class="dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-slate-600">
+        <span class="px-1 rounded bg-slate-800 text-[9px] text-slate-400">0</span>
+        <span>ORBIT OVERVIEW</span>
+      </button>
+
+      <!-- Auto-Orbit Toggle -->
+      <button onclick="toggleAutoOrbit()" id="btn-auto-orbit" class="shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-emerald-500/15 border-emerald-500/40 text-emerald-300" title="Toggle Continuous Orbital Camera Rotation">
+        <i class="fa-solid fa-rotate text-[10px] animate-spin" id="orbit-icon" style="animation-duration: 8s;"></i>
+        <span class="hidden xl:inline">AUTO-ORBIT</span>
+      </button>
+
+      <!-- Mobile Metric Switcher Quick Button -->
+      <button onclick="cycleBIMetric()" class="lg:hidden shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium bg-cobalt-500/20 border border-cobalt-500/40 text-cobalt-300 flex items-center gap-1">
+        <i class="fa-solid fa-chart-Simple"></i>
+        <span>3D METRIC</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE SQL / PIPELINE QUERY MODAL ("QUERY ASWIN'S DATA LAKE")     -->
+  <!-- ===================================================================== -->
+  <div id="sql-modal" class="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
+    <div class="hud-panel tech-corner w-full max-w-5xl rounded-2xl border border-violet-500/40 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 bg-gradient-to-r from-obsidian via-slatepanel to-obsidian border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400">
+            <i class="fa-solid fa-database"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-sm sm:text-base text-white tracking-wide flex items-center gap-2">
+              QUERY ASWIN'S DATA LAKE // INTERACTIVE SQL &amp; TELEMETRY ENGINE
+              <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono text-[10px]">duckdb_spatial_v3.2</span>
+            </h3>
+            <p class="font-mono text-[11px] text-slate-400">Execute preset analytical queries or filter engineering records. Click any result row to fly the 3D camera to its physical station.</p>
+          </div>
+        </div>
+        <button onclick="toggleSqlModal(false)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center border border-slate-700">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Preset SQL Query Pills -->
+      <div class="p-4 bg-obsidian/70 border-b border-slate-800/80 space-y-2.5">
+        <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider font-semibold">
+          <i class="fa-solid fa-code mr-1"></i>PRESET ANALYTICAL &amp; BENCHMARK QUERIES (CLICK TO EXECUTE):
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button onclick="runPresetQuery(0)" class="sql-preset-btn px-2.5 py-1.5 rounded bg-slate-800/90 hover:bg-amber-500/20 hover:border-amber-500/50 border border-slate-700 text-left font-mono text-[11px] text-slate-200 transition-all">
+            <span class="text-amber-400">SELECT *</span> FROM projects WHERE domain = <span class="text-emerald-400">'DATA_ENGINEERING'</span> ORDER BY updated DESC;
+          </button>
+          <button onclick="runPresetQuery(1)" class="sql-preset-btn px-2.5 py-1.5 rounded bg-slate-800/90 hover:bg-cobalt-500/20 hover:border-cobalt-500/50 border border-slate-700 text-left font-mono text-[11px] text-slate-200 transition-all">
+            <span class="text-cobalt-400">EXPLAIN ANALYZE SELECT</span> skill, proficiency, station FROM stack WHERE category IN (<span class="text-emerald-400">'SWE'</span>, <span class="text-emerald-400">'AI_ML'</span>);
+          </button>
+          <button onclick="runPresetQuery(2)" class="sql-preset-btn px-2.5 py-1.5 rounded bg-slate-800/90 hover:bg-violet-500/20 hover:border-violet-500/50 border border-slate-700 text-left font-mono text-[11px] text-slate-200 transition-all">
+            <span class="text-violet-400">SELECT *</span> FROM projects WHERE domain IN (<span class="text-emerald-400">'AI_ML'</span>, <span class="text-emerald-400">'SWE'</span>);
+          </button>
+          <button onclick="runPresetQuery(3)" class="sql-preset-btn px-2.5 py-1.5 rounded bg-slate-800/90 hover:bg-emerald-500/20 hover:border-emerald-500/50 border border-slate-700 text-left font-mono text-[11px] text-slate-200 transition-all">
+            <span class="text-emerald-400">SELECT *</span> FROM projects WHERE domain = <span class="text-amber-400">'IOT_EDGE'</span>;
+          </button>
+          <button onclick="runPresetQuery(4)" class="sql-preset-btn px-2.5 py-1.5 rounded bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-left font-mono text-[11px] text-slate-200 transition-all">
+            <span class="text-amber-400">SELECT *</span> FROM observatory_catalog ORDER BY station_id ASC;
+          </button>
+        </div>
+
+        <!-- Live Editable Query Console Bar -->
+        <div class="flex flex-col sm:flex-row gap-2 pt-1">
+          <div class="flex-1 relative font-mono text-xs">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 font-bold">sql&gt;</span>
+            <input id="sql-input-box" type="text" value="SELECT * FROM observatory_catalog ORDER BY station_id ASC;" oninput="filterSqlTableByKeyword(this.value)" class="w-full pl-14 pr-4 py-2 rounded-lg bg-obsidian border border-slate-700 text-emerald-300 focus:outline-none focus:border-amber-500 font-mono text-xs selectable-text" placeholder="Type SQL query or filter keyword (e.g., Python, Kafka, Power BI, Groq, ESP32)..." />
+          </div>
+          <button onclick="executeCustomSqlBox()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-obsidian font-mono font-bold text-xs transition-all shrink-0 flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-play"></i> EXECUTE &amp; HIGHLIGHT 3D
+          </button>
+        </div>
+      </div>
+
+      <!-- Execution Telemetry Status Bar -->
+      <div class="px-5 py-2 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px]">
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i>QUERY OK</span>
+          <span id="sql-row-count" class="text-slate-300">12 rows returned</span>
+          <span id="sql-exec-time" class="text-slate-500">(0.38 ms)</span>
+        </div>
+        <div class="text-amber-400 text-[10px]">
+          <i class="fa-solid fa-crosshairs mr-1"></i>Click any row to lock 3D camera onto station
+        </div>
+      </div>
+
+      <!-- Tabular Results Grid -->
+      <div class="p-4 overflow-y-auto custom-scroll flex-1 selectable-text">
+        <div class="overflow-x-auto rounded-lg border border-slate-800">
+          <table class="w-full text-left border-collapse font-mono text-xs">
+            <thead>
+              <tr id="sql-table-head" class="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                <!-- Populated dynamically -->
+              </tr>
+            </thead>
+            <tbody id="sql-table-body" class="divide-y divide-slate-800/70 bg-obsidian/50">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST NOTIFICATION BANNER (NON-BLOCKING TELEMETRY ALERT)              -->
+  <!-- ===================================================================== -->
+  <div id="telemetry-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
+    <div class="hud-panel hud-panel-amber px-4 py-2 rounded-lg font-mono text-xs text-amber-300 flex items-center gap-2.5 shadow-2xl">
+      <i class="fa-solid fa-bolt text-amber-400 animate-bounce"></i>
+      <span id="telemetry-toast-text">TELEMETRY SURGE ENGAGED</span>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION DATA, THREE.JS 3D OBSERVATORY & HUD LOGIC                 -->
+  <!-- ===================================================================== -->
+  <script>
+    /*************************************************************************
+     * 1. OBSERVATORY STATION & PORTFOLIO DATA FOR ASWIN A (ASWINa1636)
+     *************************************************************************/
+    const STATIONS = {
+      0: {
+        id: 0,
+        code: "ORBIT OVERVIEW // SECTOR [ALL]",
+        shortTag: "00 // OBSERVATORY",
+        domainBadge: "FULL SPATIAL TWIN",
+        title: "SPATIAL DATA & SYSTEMS OBSERVATORY",
+        subtitle: "Interactive 3D Command Floor — Select Any Station Node [1-5]",
+        coords: { x: 0, y: 0, z: 0 },
+        camPos: { x: 0, y: 25, z: 34 },
+        lookAt: { x: 0, y: 1.5, z: -2 },
+        color: "#f59e0b",
+        chartTitle: "OBSERVATORY GLOBAL TELEMETRY // ALL 5 STATIONS",
+        chartMetric: "5 ACTIVE CLUSTERS | 100% UPTIME",
+        chartType: "harmonic",
+        summary: "Welcome to Aswin A\'s Spatial Data & Systems Observatory. Drag to orbit, scroll to zoom, or click any of the 5 stations to inspect his GitHub projects across data engineering, GenAI agents, self-hosted systems and embedded IoT.",
+        highlights: [
+          { label: "Role Focus", value: "Data Analyst, Data Engineer & Software Engineer" },
+          { label: "Academic", value: "B.Tech ECE @ SRMIST Chennai ('27)" },
+          { label: "LinkedIn", value: "linkedin.com/in/aswin-a-954107292" },
+          { label: "GitHub", value: "github.com/ASWINa1636" }
+        ],
+        projects: [
+          {"title": "Station 01 — Core Architect Monolith", "domain": "Identity & Featured Repos", "metrics": "Codeforces Lakehouse • IoT Factory • Home Server", "desc": "Overview of the three flagship GitHub projects across data engineering, streaming and self-hosted systems.", "stack": ["Python", "SQL", "FastAPI", "Kafka", "Airflow"], "schematic": "[Featured Repos] ──► [Data + Systems] ──► [GitHub]", "github": "https://github.com/ASWINa1636/", "stationJump": 1},
+          {"title": "Station 02 — ETL & 3D BI Analytics Foundry", "domain": "Data Analytics & Data Engineering", "metrics": "Lakehouse • Streaming • Power BI", "desc": "Codeforces Lakehouse, IoT Factory streaming, Gmail warehouse, Cost of Living, Chennai Property Tax and Spotify analytics.", "stack": ["Python", "SQL", "PostgreSQL", "Power BI", "Airflow", "dbt"], "schematic": "[Raw Data] ──► [Pipelines + SQL] ──► [BI Dashboards]", "github": "https://github.com/ASWINa1636/", "stationJump": 2},
+          {"title": "Station 03 — Software & Agentic AI Compute Rack", "domain": "Software Engineering & GenAI", "metrics": "Groq Agents • HF Dataset • Home Server", "desc": "MiMo-RL-Curated, GenAI Insights Agent, AI Data Analyst, Pricing Intelligence, Apple Support Agent and Home Server.", "stack": ["Python", "Groq", "Streamlit", "FastAPI", "React"], "schematic": "[LLM Agents] ──► [Data + Backend] ──► [Apps]", "github": "https://github.com/ASWINa1636/", "stationJump": 3},
+          {"title": "Station 04 — Edge IoT & Hardware Telemetry Rig", "domain": "Embedded Systems & Android", "metrics": "ESP32 • MPU6500 • MAX30102 • Kotlin", "desc": "Earthquake Detection System, Vital Monitor and the Circuits Android app.", "stack": ["ESP32", "MPU6500", "MAX30102", "Kotlin", "SQLite"], "schematic": "[Sensors] ──► [ESP32 Logic] ──► [Alerts / App]", "github": "https://github.com/ASWINa1636/", "stationJump": 4}
+        ]
+      },
+
+      1: {
+        id: 1,
+        code: "STATION 01 // CENTER [0, 0, 0]",
+        shortTag: "01 // CORE ARCHITECT",
+        domainBadge: "IDENTITY & OVERVIEW",
+        title: "CORE ARCHITECT MONOLITH",
+        subtitle: "Aswin A — B.Tech ECE @ SRMIST '27",
+        coords: { x: 0, y: 5.8, z: 0 },
+        camPos: { x: 0, y: 8.5, z: 12.5 },
+        lookAt: { x: 0, y: 3.2, z: 0 },
+        color: "#f59e0b",
+        chartTitle: "ARCHITECTURAL CORE HARMONICS // CROSS-DISCIPLINARY INDEX",
+        chartMetric: "ECE + DATA ENG + SWE | CHENNAI, IN",
+        chartType: "harmonic",
+        summary: "Aswin A is a builder operating at the intersection of Data Analytics, Data Engineering, and High-Reliability Software Engineering. Pursuing B.Tech in Electronics & Communication Engineering at SRM Institute of Science and Technology (2027), Chennai.",
+        highlights: [
+          { label: "Education", value: "B.Tech ECE, SRMIST Chennai ('27)" },
+          { label: "Experience", value: "IBM SkillsBuild (2026) • Embedded Systems (2024)" },
+          { label: "Core Pillars", value: "ETL/BI, Agentic AI, Self-Hosted Systems, IoT" },
+          { label: "Location", value: "Chennai, Tamil Nadu, India" }
+        ],
+        projects: [
+          {"title": "IBM SkillsBuild Data Analytics with AI Internship", "domain": "Virtual Internship • IBM × AICTE × BharatCares", "metrics": "6 weeks • 17 Aug – 30 Sep 2026", "desc": "Completed the 6-week IBM SkillsBuild Data Analytics with AI Internship Program, conducted in association with AICTE and BharatCares.", "stack": ["Data Analytics", "AI", "IBM SkillsBuild"], "schematic": "Certificate of Training • ID IBMACBHDAI0683", "github": ""},
+          {"title": "Embedded System Developer Virtual Internship", "domain": "Virtual Internship • EduSkills × AICTE (Microchip)", "metrics": "10 weeks • Oct – Dec 2024", "desc": "Completed the 10-week Embedded System Developer Virtual Internship, supported by Microchip through the AICTE National Internship Portal and EduSkills.", "stack": ["Embedded Systems", "Microchip"], "schematic": "Certificate ID 4cbc0fe01c65c34840a7a047b25df777", "github": ""},
+          {"title": "Codeforces Data Lakehouse", "domain": "Data Engineering", "metrics": "Airflow • dbt • PostgreSQL • Parquet • Power BI", "desc": "End-to-end lakehouse automating ingestion, processing, warehousing, transformation, validation and analytics for Codeforces data.", "stack": ["Python", "PostgreSQL", "dbt", "Apache Airflow", "Docker", "Parquet", "Power BI"], "schematic": "[Codeforces Data] ──► [Airflow + Parquet + PostgreSQL] ──► [dbt + Power BI]", "github": "https://github.com/ASWINa1636/Codeforces-Data-Lakehouse"},
+          {"title": "IoT Factory Monitoring & Streaming Analytics", "domain": "Streaming Data Engineering", "metrics": "MQTT • Kafka • Spark Structured Streaming", "desc": "Simulates virtual factory machines and processes live sensor data through a streaming stack into PostgreSQL and Power BI.", "stack": ["Python", "MQTT", "Kafka", "Spark", "PostgreSQL", "Docker", "Power BI"], "schematic": "[Virtual Machines] ──► [MQTT + Kafka] ──► [Spark + PostgreSQL + Power BI]", "github": "https://github.com/ASWINa1636/IoT-Factory_Monitoring-and-Streaming_Analytics"},
+          {"title": "Home Server", "domain": "Self-Hosted Full-Stack", "metrics": "FastAPI • React + Vite • Tailscale", "desc": "Security-hardened private cloud for file storage and video streaming, accessible over LAN or remotely via Tailscale.", "stack": ["FastAPI", "Python", "React", "Vite"], "schematic": "[React UI] ──► [FastAPI Backend] ──► [Files + Streaming]", "github": "https://github.com/ASWINa1636/Home-Server"}
+        ]
+      },
+
+      2: {
+        id: 2,
+        code: "STATION 02 // WEST [-14, 0, -4]",
+        shortTag: "02 // DATA & BI FOUNDRY",
+        domainBadge: "DATA ANALYST & DE",
+        title: "ETL PIPELINE & 3D BI ANALYTICS FOUNDRY",
+        subtitle: "Ingestion Silos, Volumetric Bar Towers & Predictive Forecasting",
+        coords: { x: -14, y: 5.2, z: -4 },
+        camPos: { x: -14, y: 9.5, z: 8.5 },
+        lookAt: { x: -14, y: 2.2, z: -4 },
+        color: "#3b82f6",
+        chartTitle: "ETL STREAM THROUGHPUT & FORECAST CONFIDENCE INTERVAL",
+        chartMetric: "USE HUD METRIC SWITCHER TO MORPH 3D BARS",
+        chartType: "etl",
+        summary: "This foundry visualizes raw cylindrical data silos feeding cleaned schemas into a physical 3D matrix of animated Volumetric Bar Chart Towers and a 3D surface plot. Toggle the 3D Bar Chart metric in the left HUD ('Data Volume', 'Model Accuracy %', 'Query Speedup') to physically morph the 3D towers.",
+        highlights: [
+          { label: "BI & Viz", value: "Power BI, Streamlit dashboards" },
+          { label: "Data Eng", value: "Python, SQL, Airflow, dbt, Kafka, Spark" },
+          { label: "Forecasting", value: "Scikit-learn, regression models" },
+          { label: "Interactive 3D", value: "16 Live Volumetric BI Towers" }
+        ],
+        projects: [
+          {"title": "Codeforces Data Lakehouse", "domain": "Data Engineering", "metrics": "Airflow • dbt • PostgreSQL • Parquet • Power BI", "desc": "End-to-end lakehouse automating ingestion, processing, warehousing, transformation, validation and analytics for Codeforces data.", "stack": ["Python", "PostgreSQL", "dbt", "Apache Airflow", "Docker", "Parquet", "Power BI"], "schematic": "[Codeforces Data] ──► [Airflow + Parquet + PostgreSQL] ──► [dbt + Power BI]", "github": "https://github.com/ASWINa1636/Codeforces-Data-Lakehouse"},
+          {"title": "IoT Factory Monitoring & Streaming Analytics", "domain": "Streaming Data Engineering", "metrics": "MQTT • Kafka • Spark Structured Streaming", "desc": "Simulates virtual factory machines and processes live sensor data through a streaming stack into PostgreSQL and Power BI.", "stack": ["Python", "MQTT", "Kafka", "Spark", "PostgreSQL", "Docker", "Power BI"], "schematic": "[Virtual Machines] ──► [MQTT + Kafka] ──► [Spark + PostgreSQL + Power BI]", "github": "https://github.com/ASWINa1636/IoT-Factory_Monitoring-and-Streaming_Analytics"},
+          {"title": "Gmail Data Warehouse Pipeline", "domain": "Data Engineering", "metrics": "4,887 emails • Layered PostgreSQL Warehouse", "desc": "Ingests a raw email export, cleans and classifies it, and loads it into a layered PostgreSQL warehouse ready for BI.", "stack": ["Python", "PostgreSQL", "ETL"], "schematic": "[Email Export] ──► [Clean + Classify] ──► [Layered Warehouse]", "github": "https://github.com/ASWINa1636/Gmail-Data_Warehouse-Pipeline"},
+          {"title": "Global Cost of Living Analysis (World Bank PLI 1990–2024)", "domain": "Econometric Analytics", "metrics": "World Bank Price Level Index", "desc": "Analyzes cost-of-living differences across countries using World Bank PLI data, with EDA, machine learning and Power BI.", "stack": ["Python", "Scikit-learn", "Power BI", "Jupyter"], "schematic": "[World Bank PLI] ──► [EDA + ML] ──► [Power BI]", "github": "https://github.com/ASWINa1636/Global_Cost_of_Living_Analysis-Using-World_Bank-PLI_Data-1990-2024"},
+          {"title": "Chennai Property Tax Analysis (2013–2018)", "domain": "Urban Analytics", "metrics": "Zone-wise collection efficiency", "desc": "Analyzes tax collection efficiency across Chennai zones and identifies revenue leakage.", "stack": ["Python", "Jupyter", "Data Analysis"], "schematic": "[Tax Records] ──► [Zone Analysis] ──► [Leakage Insights]", "github": "https://github.com/ASWINa1636/Chennai-Property-Tax-Analysis-2013-2018"},
+          {"title": "Spotify Analytics", "domain": "SQL & BI", "metrics": "SQLite • Power BI", "desc": "Interactive visualizations of song popularity, genres, artists, albums and audio features from a Spotify dataset.", "stack": ["SQLite", "SQL", "Power BI"], "schematic": "[Spotify Dataset] ──► [SQLite] ──► [Power BI]", "github": "https://github.com/ASWINa1636/Spotify-Analytics"}
+        ]
+      },
+
+      3: {
+        id: 3,
+        code: "STATION 03 // EAST [14, 0, -4]",
+        shortTag: "03 // SWE & AI RACK",
+        domainBadge: "SOFTWARE & AGENTIC AI",
+        title: "SOFTWARE & AGENTIC AI COMPUTE RACK",
+        subtitle: "LLM Agents, Dataset Curation & Self-Hosted Backend",
+        coords: { x: 14, y: 5.5, z: -4 },
+        camPos: { x: 14, y: 9.0, z: 8.5 },
+        lookAt: { x: 14, y: 2.5, z: -4 },
+        color: "#8b5cf6",
+        chartTitle: "LLM AGENT PIPELINES & DATASET CURATION",
+        chartMetric: "GROQ AGENTS | HF DATASET CURATION",
+        chartType: "compute",
+        summary: "A multi-blade server rack with a pulsing neural core, representing Aswin\'s GitHub work in LLM agents, dataset curation and self-hosted full-stack applications.",
+        highlights: [
+          { label: "LLM & RAG", value: "Groq, RAG, XGBoost, Streamlit" },
+          { label: "Systems SWE", value: "FastAPI, React, Vite, Tailscale" },
+          { label: "HuggingFace", value: "Aswina1636/mimo-rl-curated-code" },
+          { label: "Backend & DB", value: "Python, FastAPI, MySQL, SQLite" }
+        ],
+        projects: [
+          {"title": "MiMo-RL-Curated", "domain": "Dataset Curation & Data Engineering", "metrics": "HuggingFace Dataset • Dashboard", "desc": "Curation pipeline for the MiMo-V2.6-RL code subset: task enrichment, difficulty scoring, embeddings, clustering, duplicate detection, bug-vs-feature classification and a dashboard.", "stack": ["Python", "HuggingFace Datasets", "Embeddings", "Clustering"], "schematic": "[MiMo-RL Tasks] ──► [Enrich + Embed + Cluster] ──► [Curated Dataset + Dashboard]", "github": "https://github.com/ASWINa1636/MiMo-RL-Curated"},
+          {"title": "GenAI Business Insights Agent", "domain": "Generative AI", "metrics": "Groq • RAG • NL-to-SQL • XGBoost", "desc": "Autonomous agent that answers plain-English business questions with statistically validated, data-backed answers.", "stack": ["Python", "Groq", "RAG", "XGBoost", "Streamlit"], "schematic": "[Question] ──► [NL-to-SQL + RAG + ML] ──► [Validated Answer]", "github": "https://github.com/ASWINa1636/GenAI-Business-Insights-Agent"},
+          {"title": "AI Data Analyst Dashboard", "domain": "AI Analytics", "metrics": "Groq-powered insights", "desc": "Streamlit dashboard for automated preprocessing, EDA, visualization, anomaly detection and AI insights from CSV, Excel and JSON uploads.", "stack": ["Python", "Streamlit", "Groq"], "schematic": "[Upload] ──► [Preprocess + EDA + Anomalies] ──► [AI Insights]", "github": "https://github.com/ASWINa1636/AI-Data_Analyst-Dashboard"},
+          {"title": "Pricing Intelligence Agent", "domain": "Pricing Analytics", "metrics": "Price elasticity • Streamlit", "desc": "Estimates price elasticity, generates evidence-based price recommendations and writes business justifications.", "stack": ["Python", "Streamlit"], "schematic": "[Sales Data] ──► [Elasticity Model] ──► [Price Recommendation]", "github": "https://github.com/ASWINa1636/Pricing-Intelligence-Agent"},
+          {"title": "Apple Support AI Agent", "domain": "Customer-Support AI", "metrics": "Intent classification • Escalation", "desc": "Built from real Twitter conversations: classifies intents, drafts grounded replies and decides auto-handle vs human escalation.", "stack": ["Python", "NLP", "LLM"], "schematic": "[Customer Message] ──► [Intent + Draft Reply] ──► [Auto-handle / Escalate]", "github": "https://github.com/ASWINa1636/Apple-Support-AI-Agent"},
+          {"title": "Home Server", "domain": "Self-Hosted Full-Stack", "metrics": "FastAPI • React + Vite • Tailscale", "desc": "Security-hardened private cloud for file storage and video streaming, accessible over LAN or remotely via Tailscale.", "stack": ["FastAPI", "Python", "React", "Vite"], "schematic": "[React UI] ──► [FastAPI Backend] ──► [Files + Streaming]", "github": "https://github.com/ASWINa1636/Home-Server"}
+        ]
+      },
+
+      4: {
+        id: 4,
+        code: "STATION 04 // NORTH [0, 0, -16]",
+        shortTag: "04 // EDGE IOT RIG",
+        domainBadge: "EMBEDDED & TINYML",
+        title: "EDGE IOT & HARDWARE TELEMETRY RIG",
+        subtitle: "ESP32 Seismic Detection, Vital Monitor & Android App",
+        coords: { x: 0, y: 4.8, z: -16 },
+        camPos: { x: 0, y: 8.5, z: -3.5 },
+        lookAt: { x: 0, y: 1.8, z: -16 },
+        color: "#10b981",
+        chartTitle: "ESP32 SEISMIC SENSING & VITAL SIGN TELEMETRY",
+        chartMetric: "ESP32 + MPU6500 | RELAY + SMS ALERT",
+        chartType: "seismic",
+        summary: "A physical 3D PCB platform featuring gold conductive traces, an ESP32 microcontroller core, a 3-axis gimbal ring simulating an MPU6050 accelerometer, and expanding seismic wave rings.",
+        highlights: [
+          { label: "Microcontrollers", value: "ESP32, Arduino, MPU6500, MAX30102" },
+          { label: "Edge AI", value: "Seismic classification, SpO₂ / HRV signal processing" },
+          { label: "Cloud IoT", value: "Relay control, SMS alerts" },
+          { label: "Mobile & HDL", value: "Kotlin Android, SQLite" }
+        ],
+        projects: [
+          {"title": "Earthquake Detection System", "domain": "Embedded IoT Safety", "metrics": "ESP32 • MPU6500 • DHT11 • Relay • SMS", "desc": "Dual-hazard detection with ML-inspired seismic classification on ESP32, relay control and SMS alerts via the CircuitDigest API.", "stack": ["ESP32", "MPU6500", "DHT11", "Embedded C", "SMS API"], "schematic": "[MPU6500] ──► [ESP32 Classifier] ──► [Relay + SMS Alert]", "github": "https://github.com/ASWINa1636/Earthquake-Detection-System"},
+          {"title": "Circuits", "domain": "Android App (Kotlin)", "metrics": "Kotlin • SQLite • GPL-3.0", "desc": "Native Android app for ECE students to organize and share component datasheets, with search, profiles and contribution-based access.", "stack": ["Kotlin", "SQLite", "Material Design"], "schematic": "[Datasheets] ──► [SQLite + Search] ──► [Android App]", "github": "https://github.com/ASWINa1636/Circuits"},
+          {"title": "Vital Monitor", "domain": "Biomedical Embedded", "metrics": "ESP32 • MAX30102 • OLED", "desc": "Offline vital monitor measuring heart rate, SpO₂ and HRV with real-time stress analysis, OLED display and an emergency button.", "stack": ["ESP32", "MAX30102", "OLED", "Arduino"], "schematic": "[MAX30102] ──► [ESP32 DSP] ──► [OLED + Alert]", "github": "https://github.com/ASWINa1636/Vital-Monitor"}
+        ]
+      },
+
+      5: {
+        id: 5,
+        code: "STATION 05 // SOUTH [0, 0, 13]",
+        shortTag: "05 // SKILL MATRIX",
+        domainBadge: "STACK & SQL TERMINAL",
+        title: "HEXAGONAL SKILL MATRIX & TELEMETRY NODE",
+        subtitle: "Full-Spectrum Proficiency Across Data, Software & Hardware",
+        coords: { x: 0, y: 4.5, z: 13 },
+        camPos: { x: 0, y: 9.2, z: 24.5 },
+        lookAt: { x: 0, y: 1.5, z: 13 },
+        color: "#f59e0b",
+        chartTitle: "STACK PROFICIENCY DISTRIBUTION // DATA vs SWE vs HARDWARE",
+        chartMetric: "15 CORE TECHNOLOGIES ACROSS GITHUB REPOS",
+        chartType: "harmonic",
+        summary: "A 3D hexagonal crystalline array where each pillar height and color encodes Aswin's proficiency across Data Analytics/Engineering (Blue), Software/AI Engineering (Violet), and Embedded Hardware (Emerald). Open the SQL Data Lake Explorer to run live queries against this matrix.",
+        highlights: [
+          { label: "Data & BI", value: "Python, SQL, PySpark, Kafka, Pandas, Power BI" },
+          { label: "Software & DB", value: "FastAPI, React, Flask, Streamlit, MySQL, Docker" },
+          { label: "AI & LLM", value: "Groq, RAG, XGBoost, Scikit-learn, HuggingFace" },
+          { label: "Hardware/App", value: "ESP32, MAX30102, MPU6500, Kotlin Android" }
+        ],
+        projects: [
+          {"title": "Domain 01 — Data Analytics & Data Engineering", "domain": "Analytical Cobalt Cluster", "metrics": "Codeforces Lakehouse • IoT Factory • Gmail Warehouse • Cost of Living", "desc": "Python, SQL, PostgreSQL, Airflow, dbt, Kafka, Spark, Pandas and Power BI across the data repos.", "stack": ["Python", "SQL", "PostgreSQL", "Kafka", "Spark", "Power BI"], "schematic": "[Raw Data] ──► [Pipelines] ──► [BI]", "github": "https://github.com/ASWINa1636/?tab=repositories"},
+          {"title": "Domain 02 — Software & Agentic AI", "domain": "Neural Violet Cluster", "metrics": "GenAI Agent • AI Data Analyst • MiMo-RL • Home Server", "desc": "FastAPI, React, Streamlit, Groq LLM agents, RAG, XGBoost and HuggingFace datasets.", "stack": ["FastAPI", "React", "Streamlit", "Groq", "XGBoost"], "schematic": "[APIs] ──► [LLM Agents] ──► [Apps]", "github": "https://github.com/ASWINa1636/?tab=repositories"},
+          {"title": "Domain 03 — Embedded IoT & Mobile", "domain": "Telemetry Emerald Cluster", "metrics": "Earthquake Detection • Vital Monitor • Circuits", "desc": "ESP32 firmware, MPU6500 and MAX30102 sensing, plus native Kotlin Android.", "stack": ["ESP32", "MPU6500", "MAX30102", "Kotlin"], "schematic": "[Sensors] ──► [ESP32] ──► [Alerts / App]", "github": "https://github.com/ASWINa1636/?tab=repositories"}
+        ]
+      }
     };
 
-    async function fetchRepos() {
-        const container = document.getElementById('projectsContainer');
-        const btn = document.getElementById('showMoreBtn');
-        try {
-            const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`);
-            if (!res.ok) throw new Error();
-            allRepos = await res.json();
-            renderRepos();
-            if (allRepos.length > showCount) btn.style.display = 'inline-block';
-        } catch {
-            container.innerHTML = `<div class="loading-msg">⚠ Could not fetch repos. <a href="https://github.com/${GITHUB_USER}" target="_blank" style="color:var(--accent)">Visit GitHub →</a></div>`;
+    // 3D BI Bar Chart Metrics Data (16 bars in 4x4 grid at Station 02)
+    const BI_METRICS = {
+      volume: {
+        label: "3D BI MATRIX: DATA VOLUME PROCESSED (TB/d)",
+        colorHex: 0x3b82f6,
+        emissiveHex: 0x1d4ed8,
+        heights: [
+          2.2, 3.8, 3.1, 4.9,
+          2.8, 4.5, 5.6, 6.2,
+          3.4, 5.1, 6.8, 7.5,
+          4.1, 5.9, 7.2, 8.4
+        ]
+      },
+      accuracy: {
+        label: "3D BI MATRIX: MODEL ACCURACY & R² SCORE (94.2% - 99.1%)",
+        colorHex: 0x10b981,
+        emissiveHex: 0x047857,
+        heights: [
+          5.8, 6.4, 6.1, 6.9,
+          6.2, 7.1, 7.4, 7.8,
+          6.5, 7.3, 8.0, 8.3,
+          6.9, 7.7, 8.2, 8.6
+        ]
+      },
+      speedup: {
+        label: "3D BI MATRIX: SQL & PIPELINE QUERY SPEEDUP (12x - 48x)",
+        colorHex: 0xf59e0b,
+        emissiveHex: 0xb45309,
+        heights: [
+          1.8, 2.9, 4.2, 6.5,
+          2.4, 3.9, 5.8, 7.9,
+          3.1, 5.2, 7.1, 8.8,
+          4.0, 6.4, 8.1, 9.2
+        ]
+      }
+    };
+
+    // SQL Data Lake Catalog (GitHub repos only)
+    const DATA_LAKE_CATALOG = [
+      {"id": "PRJ-201", "name": "Codeforces Data Lakehouse", "domain": "DATA_ENGINEERING", "category": "Lakehouse", "stack": "Python, PostgreSQL, dbt, Airflow, Docker, Power BI", "updated": "2026-10", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-202", "name": "IoT Factory Monitoring & Streaming Analytics", "domain": "DATA_ENGINEERING", "category": "Streaming", "stack": "Python, MQTT, Kafka, Spark, PostgreSQL, Power BI", "updated": "2026-07", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-203", "name": "Gmail Data Warehouse Pipeline", "domain": "DATA_ENGINEERING", "category": "Warehouse ETL", "stack": "Python, PostgreSQL", "updated": "2026-08", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-204", "name": "Global Cost of Living Analysis", "domain": "DATA_ENGINEERING", "category": "Analytics", "stack": "Python, Scikit-learn, Power BI", "updated": "2026-09", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-205", "name": "Chennai Property Tax Analysis", "domain": "DATA_ENGINEERING", "category": "Analytics", "stack": "Python, Jupyter", "updated": "2026-04", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-206", "name": "Spotify Analytics", "domain": "DATA_ENGINEERING", "category": "SQL & BI", "stack": "SQLite, Power BI", "updated": "2026-07", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-207", "name": "Sales Forecasting System", "domain": "AI_ML", "category": "Regression", "stack": "Python, Jupyter, Regression Models", "updated": "2026-08", "stationId": 2, "stationName": "ST-02 // BI FOUNDRY"},
+      {"id": "PRJ-301", "name": "MiMo-RL-Curated", "domain": "AI_ML", "category": "Dataset Curation", "stack": "Python, HuggingFace, Embeddings", "updated": "2026-10", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-302", "name": "GenAI Business Insights Agent", "domain": "AI_ML", "category": "LLM Agent", "stack": "Python, Groq, RAG, XGBoost, Streamlit", "updated": "2026-07", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-303", "name": "AI Data Analyst Dashboard", "domain": "AI_ML", "category": "AI Analytics", "stack": "Python, Streamlit, Groq", "updated": "2026-10", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-304", "name": "Pricing Intelligence Agent", "domain": "AI_ML", "category": "Pricing Analytics", "stack": "Python, Streamlit", "updated": "2026-08", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-305", "name": "Apple Support AI Agent", "domain": "AI_ML", "category": "Support AI", "stack": "Python, NLP, LLM", "updated": "2026-10", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-306", "name": "Loan Approval Prediction System", "domain": "AI_ML", "category": "Streamlit App", "stack": "Python, Streamlit", "updated": "2026-09", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-307", "name": "Stock Market Prediction System", "domain": "AI_ML", "category": "Streamlit App", "stack": "Python, Streamlit", "updated": "2026-09", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-308", "name": "Home Server", "domain": "SWE", "category": "Full-Stack", "stack": "FastAPI, React, Vite, Tailscale", "updated": "2026-10", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-309", "name": "Smart Inventory Management System", "domain": "SWE", "category": "Streamlit App", "stack": "Python, Streamlit", "updated": "2026-09", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-310", "name": "Career Toolkit CLI", "domain": "SWE", "category": "CLI Tooling", "stack": "Python, MySQL", "updated": "2026-01", "stationId": 3, "stationName": "ST-03 // SWE & AI RACK"},
+      {"id": "PRJ-401", "name": "Earthquake Detection System", "domain": "IOT_EDGE", "category": "Embedded IoT", "stack": "ESP32, MPU6500, DHT11, Embedded C", "updated": "2026-05", "stationId": 4, "stationName": "ST-04 // EDGE IOT RIG"},
+      {"id": "PRJ-402", "name": "Circuits Android App", "domain": "IOT_EDGE", "category": "Mobile", "stack": "Kotlin, SQLite, Material Design", "updated": "2026-10", "stationId": 4, "stationName": "ST-04 // EDGE IOT RIG"},
+      {"id": "PRJ-403", "name": "Vital Monitor", "domain": "IOT_EDGE", "category": "Biomedical", "stack": "ESP32, MAX30102, OLED", "updated": "2026-06", "stationId": 4, "stationName": "ST-04 // EDGE IOT RIG"}
+    ];
+
+    const SKILL_NODES_DATA = [
+      { skill: "Python", category: "DATA_ENGINEERING", proficiency: "98%", projects: "All data repos", color: 0x3b82f6, h: 4.8 },
+      { skill: "SQL / PostgreSQL", category: "DATA_ENGINEERING", proficiency: "96%", projects: "Codeforces Lakehouse, Gmail Warehouse", color: 0x3b82f6, h: 4.5 },
+      { skill: "Power BI", category: "DATA_ENGINEERING", proficiency: "95%", projects: "Cost of Living, Spotify, IoT Factory", color: 0x3b82f6, h: 4.3 },
+      { skill: "Pandas / NumPy", category: "DATA_ENGINEERING", proficiency: "97%", projects: "Property Tax, Sales Forecasting", color: 0x3b82f6, h: 4.6 },
+      { skill: "PySpark & Kafka", category: "DATA_ENGINEERING", proficiency: "89%", projects: "IoT Factory Streaming", color: 0x3b82f6, h: 3.7 },
+      { skill: "Scikit-learn / XGBoost", category: "AI_ML", proficiency: "92%", projects: "GenAI Agent, Sales Forecasting", color: 0x8b5cf6, h: 4.1 },
+      { skill: "Groq LLM / RAG", category: "AI_ML", proficiency: "94%", projects: "GenAI Agent, AI Data Analyst", color: 0x8b5cf6, h: 4.3 },
+      { skill: "HuggingFace Datasets", category: "AI_ML", proficiency: "95%", projects: "MiMo-RL-Curated", color: 0x8b5cf6, h: 4.4 },
+      { skill: "Streamlit Apps", category: "SWE", proficiency: "93%", projects: "Pricing Agent, Loan, Stock", color: 0x8b5cf6, h: 4.2 },
+      { skill: "FastAPI / Flask", category: "SWE", proficiency: "91%", projects: "Home Server, Job Viewers", color: 0x8b5cf6, h: 3.9 },
+      { skill: "Docker & Linux", category: "SWE", proficiency: "88%", projects: "Lakehouse, IoT Factory, Home Server V2", color: 0x8b5cf6, h: 3.6 },
+      { skill: "ESP32 & MPU6500", category: "IOT_EDGE", proficiency: "94%", projects: "Earthquake Detection System", color: 0x10b981, h: 4.2 },
+      { skill: "MAX30102 Biosensing", category: "IOT_EDGE", proficiency: "91%", projects: "Vital Monitor", color: 0x10b981, h: 3.9 },
+      { skill: "Kotlin Android", category: "IOT_EDGE", proficiency: "89%", projects: "Circuits App", color: 0x10b981, h: 3.7 },
+      { skill: "Embedded C / Arduino", category: "IOT_EDGE", proficiency: "87%", projects: "Earthquake Detection, Vital Monitor", color: 0x10b981, h: 3.5 }
+    ];
+
+    /*************************************************************************
+     * 2. THREE.JS SCENE, CAMERA CONTROLLER & PROCEDURAL 3D ARCHITECTURE
+     *************************************************************************/
+    let scene, camera, renderer, raycaster, mouse;
+    let clock = new THREE.Clock();
+
+    // Camera Flight & Spherical Orbit State
+    const camState = {
+      currentPos: new THREE.Vector3(0, 25, 34),
+      currentLookAt: new THREE.Vector3(0, 1.5, -2),
+      targetPos: new THREE.Vector3(0, 8.5, 12.5),
+      targetLookAt: new THREE.Vector3(0, 3.2, 0),
+      isFlying: true,
+      autoOrbit: true,
+      orbitSpeed: 0.14,
+      spherical: {
+        radius: 15,
+        theta: 0,
+        phi: Math.PI / 3
+      }
+    };
+
+    // Interactive Scene Collections
+    let currentStationId = 1;
+    let isWireframeMode = false;
+    let conduitSpeedMultiplier = 1.0;
+    let surgeTimer = 0;
+    let currentBIMetricKey = 'volume';
+
+    const clickableMeshes = [];
+    const ToggleableMaterials = [];
+    const station3DGroups = {};
+    const stationSelectionRings = {};
+    const floatingBadges = {};
+
+    // Animated 3D References
+    let coreGyroRings = [];
+    let coreSatellites = [];
+    let biBarMeshes = [];
+    let biSurfacePoints = null;
+    let sweMutexRings = [];
+    let sweNeuralCores = [];
+    let iotGimbalRings = [];
+    let iotSeismicWaves = [];
+    let skillHexPillars = [];
+    let pipelineParticles = null;
+    let pipelineParticleData = [];
+
+    function initObservatory3D() {
+      const container = document.getElementById('canvas-container');
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x090b10);
+      scene.fog = new THREE.FogExp2(0x090b10, 0.0145);
+
+      camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 250);
+      camera.position.copy(camState.currentPos);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      // Lighting Setup
+      const ambientLight = new THREE.AmbientLight(0x1e293b, 1.6);
+      scene.add(ambientLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0xf8fafc, 1.2);
+      dirLight1.position.set(18, 35, 22);
+      scene.add(dirLight1);
+
+      const amberPoint = new THREE.PointLight(0xf59e0b, 2.2, 32);
+      amberPoint.position.set(0, 8, 0);
+      scene.add(amberPoint);
+
+      const cobaltPoint = new THREE.PointLight(0x3b82f6, 2.0, 28);
+      cobaltPoint.position.set(-14, 7, -4);
+      scene.add(cobaltPoint);
+
+      const violetPoint = new THREE.PointLight(0x8b5cf6, 2.0, 28);
+      violetPoint.position.set(14, 7, -4);
+      scene.add(violetPoint);
+
+      const emeraldPoint = new THREE.PointLight(0x10b981, 2.0, 28);
+      emeraldPoint.position.set(0, 7, -16);
+      scene.add(emeraldPoint);
+
+      // Build Environment & All 5 Stations
+      buildEngineeringFloorAndConduits();
+      buildStation01CoreMonolith();
+      buildStation02BIFoundry();
+      buildStation03ComputeRack();
+      buildStation04EdgeIoTRig();
+      buildStation05SkillMatrix();
+      buildPipelineParticleStream();
+      buildAmbientStarfield();
+
+      // Create Floating World-to-Screen DOM Badges
+      createFloatingStationBadges();
+
+      // Bind Pointer, Touch, Wheel & Keyboard Interactions
+      setupInteractionListeners(renderer.domElement);
+
+      // Initialize Station 01 Inspector & SQL Modal Default
+      selectStation(1, true);
+      runPresetQuery(4);
+    }
+
+    // Helper to register materials for live CAD Wireframe / Schematic toggling
+    function registerMaterial(mat) {
+      ToggleableMaterials.push(mat);
+      return mat;
+    }
+
+    // Helper to register interactive station hitboxes
+    function registerStationHitbox(mesh, stationId) {
+      mesh.userData.stationId = stationId;
+      clickableMeshes.push(mesh);
+    }
+
+    /*************************************************************************
+     * 3. PROCEDURAL FLOOR, DUAL GRIDS & GLOWING DATA CONDUITS
+     *************************************************************************/
+    function buildEngineeringFloorAndConduits() {
+      const floorGroup = new THREE.Group();
+
+      // Base Dark Slate Platform Disc
+      const baseGeo = new THREE.CylinderGeometry(42, 42, 0.4, 64);
+      const baseMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x0b0f19,
+        roughness: 0.85,
+        metalness: 0.3
+      }));
+      const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+      baseMesh.position.y = -0.25;
+      floorGroup.add(baseMesh);
+
+      // Primary & Fine Secondary Technical Grids
+      const majorGrid = new THREE.GridHelper(80, 40, 0x3b82f6, 0x1e293b);
+      majorGrid.position.y = 0.01;
+      majorGrid.material.transparent = true;
+      majorGrid.material.opacity = 0.42;
+      floorGroup.add(majorGrid);
+
+      const minorGrid = new THREE.GridHelper(80, 160, 0x1e293b, 0x0f172a);
+      minorGrid.position.y = 0.0;
+      minorGrid.material.transparent = true;
+      minorGrid.material.opacity = 0.35;
+      floorGroup.add(minorGrid);
+
+      // Outer Perimeter Telemetry Compass Ring
+      const outerRingGeo = new THREE.RingGeometry(24.5, 24.8, 96);
+      const outerRingMat = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.35
+      });
+      const outerRing = new THREE.Mesh(outerRingGeo, outerRingMat);
+      outerRing.rotation.x = -Math.PI / 2;
+      outerRing.position.y = 0.03;
+      floorGroup.add(outerRing);
+
+      // Glowing Conduit Tracks Connecting Center [0,0,0] to Stations 02, 03, 04, 05
+      const conduitPaths = [
+        [new THREE.Vector3(0, 0.06, 0), new THREE.Vector3(-7, 0.06, 0), new THREE.Vector3(-14, 0.06, -4)],
+        [new THREE.Vector3(0, 0.06, 0), new THREE.Vector3(7, 0.06, 0), new THREE.Vector3(14, 0.06, -4)],
+        [new THREE.Vector3(0, 0.06, 0), new THREE.Vector3(0, 0.06, -8), new THREE.Vector3(0, 0.06, -16)],
+        [new THREE.Vector3(0, 0.06, 0), new THREE.Vector3(0, 0.06, 6.5), new THREE.Vector3(0, 0.06, 13)],
+        // Cross-links for Data Lake Ring
+        [new THREE.Vector3(-14, 0.05, -4), new THREE.Vector3(0, 0.05, -16), new THREE.Vector3(14, 0.05, -4)],
+        [new THREE.Vector3(-14, 0.05, -4), new THREE.Vector3(0, 0.05, 13), new THREE.Vector3(14, 0.05, -4)]
+      ];
+
+      const conduitColors = [0x3b82f6, 0x8b5cf6, 0x10b981, 0xf59e0b, 0x334155, 0x334155];
+
+      conduitPaths.forEach((pts, idx) => {
+        const curve = new THREE.CatmullRomCurve3(pts);
+        const tubeGeo = new THREE.TubeGeometry(curve, 40, idx < 4 ? 0.11 : 0.06, 8, false);
+        const tubeMat = registerMaterial(new THREE.MeshBasicMaterial({
+          color: conduitColors[idx],
+          transparent: true,
+          opacity: idx < 4 ? 0.55 : 0.25
+        }));
+        const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
+        floorGroup.add(tubeMesh);
+      });
+
+      scene.add(floorGroup);
+    }
+
+    // Create base pad + pulsing selection indicator ring for each station
+    function createStationPedestal(group, radius, hexColor, stationId) {
+      const padGeo = new THREE.CylinderGeometry(radius, radius * 1.08, 0.35, 32);
+      const padMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x111520,
+        metalness: 0.7,
+        roughness: 0.3,
+        emissive: hexColor,
+        emissiveIntensity: 0.12
+      }));
+      const pad = new THREE.Mesh(padGeo, padMat);
+      pad.position.y = 0.175;
+      registerStationHitbox(pad, stationId);
+      group.add(pad);
+
+      // Glowing Selection Ring around Pedestal
+      const ringGeo = new THREE.RingGeometry(radius * 1.12, radius * 1.24, 48);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: hexColor,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.75
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = 0.05;
+      group.add(ring);
+      stationSelectionRings[stationId] = ring;
+
+      // Invisible Raycast Hit Cylinder for effortless clicking/tapping
+      const hitGeo = new THREE.CylinderGeometry(radius * 1.1, radius * 1.1, 6.5, 16);
+      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.position.y = 3.25;
+      registerStationHitbox(hitMesh, stationId);
+      group.add(hitMesh);
+    }
+
+    /*************************************************************************
+     * 4. STATION 01 [CENTER: 0, 0, 0] — CORE ARCHITECT MONOLITH
+     *************************************************************************/
+    function buildStation01CoreMonolith() {
+      const group = new THREE.Group();
+      group.position.set(0, 0, 0);
+      createStationPedestal(group, 3.6, 0xf59e0b, 1);
+
+      // Outer Glass/Wireframe Server Monolith Column
+      const monolithGeo = new THREE.BoxGeometry(2.8, 5.2, 2.8);
+      const monolithMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        metalness: 0.8,
+        roughness: 0.2,
+        transparent: true,
+        opacity: 0.28
+      }));
+      const monolith = new THREE.Mesh(monolithGeo, monolithMat);
+      monolith.position.y = 2.95;
+      registerStationHitbox(monolith, 1);
+      group.add(monolith);
+
+      // Glowing Amber Structural Wireframe Cage
+      const edgesGeo = new THREE.EdgesGeometry(monolithGeo);
+      const edgesMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85 });
+      const wireframeBox = new THREE.LineSegments(edgesGeo, edgesMat);
+      wireframeBox.position.copy(monolith.position);
+      group.add(wireframeBox);
+
+      // Central Multi-Ring Analytical Gyroscope
+      const gyroCenterY = 3.1;
+      const coreSphereGeo = new THREE.OctahedronGeometry(0.68, 1);
+      const coreSphereMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        emissive: 0xd97706,
+        emissiveIntensity: 0.85,
+        metalness: 0.4,
+        roughness: 0.2
+      }));
+      const coreSphere = new THREE.Mesh(coreSphereGeo, coreSphereMat);
+      coreSphere.position.y = gyroCenterY;
+      group.add(coreSphere);
+      coreGyroRings.push({ mesh: coreSphere, rx: 0.8, ry: 1.4, rz: 0.4 });
+
+      const ringSpecs = [
+        { r: 1.05, tube: 0.04, color: 0xf59e0b, rx: 1.2, ry: 0.5, rz: 0.0 },
+        { r: 1.35, tube: 0.035, color: 0x3b82f6, rx: -0.4, ry: 1.1, rz: 0.8 },
+        { r: 1.65, tube: 0.03, color: 0x10b981, rx: 0.7, ry: -0.9, rz: 1.0 }
+      ];
+
+      ringSpecs.forEach(spec => {
+        const tGeo = new THREE.TorusGeometry(spec.r, spec.tube, 12, 48);
+        const tMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: spec.color,
+          emissive: spec.color,
+          emissiveIntensity: 0.5,
+          metalness: 0.6,
+          roughness: 0.3
+        }));
+        const torus = new THREE.Mesh(tGeo, tMat);
+        torus.position.y = gyroCenterY;
+        group.add(torus);
+        coreGyroRings.push({ mesh: torus, rx: spec.rx, ry: spec.ry, rz: spec.rz });
+      });
+
+      // Vertical Telemetry Laser Beam
+      const beamGeo = new THREE.CylinderGeometry(0.05, 0.05, 9, 12);
+      const beamMat = new THREE.MeshBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.45
+      });
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.y = 4.5;
+      group.add(beam);
+
+      // 4 Floating Orbital Data Satellites
+      const satColors = [0xf59e0b, 0x3b82f6, 0x8b5cf6, 0x10b981];
+      for (let i = 0; i < 4; i++) {
+        const satGeo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
+        const satMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: satColors[i],
+          emissive: satColors[i],
+          emissiveIntensity: 0.6
+        }));
+        const sat = new THREE.Mesh(satGeo, satMat);
+        group.add(sat);
+        coreSatellites.push({
+          mesh: sat,
+          angle: (i * Math.PI) / 2,
+          radius: 2.75,
+          yOffset: 2.0 + (i % 2) * 2.1,
+          speed: 0.9 + i * 0.15
+        });
+      }
+
+      station3DGroups[1] = group;
+      scene.add(group);
+    }
+
+    /*************************************************************************
+     * 5. STATION 02 [WEST: -14, 0, -4] — ETL PIPELINE & 3D BI ANALYTICS FOUNDRY
+     *************************************************************************/
+    function buildStation02BIFoundry() {
+      const group = new THREE.Group();
+      group.position.set(-14, 0, -4);
+      createStationPedestal(group, 4.4, 0x3b82f6, 2);
+
+      // 3 Cylindrical Raw Data Ingestion Silos on Left Side of Pad
+      for (let i = 0; i < 3; i++) {
+        const siloH = 2.6 + i * 0.45;
+        const siloGeo = new THREE.CylinderGeometry(0.55, 0.55, siloH, 24);
+        const siloMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: 0x1e3a8a,
+          emissive: 0x2563eb,
+          emissiveIntensity: 0.25,
+          metalness: 0.65,
+          roughness: 0.25
+        }));
+        const silo = new THREE.Mesh(siloGeo, siloMat);
+        silo.position.set(-2.3, 0.35 + siloH / 2, -1.3 + i * 1.3);
+        group.add(silo);
+
+        // Glowing Telemetry Band on each Silo
+        const bandGeo = new THREE.CylinderGeometry(0.58, 0.58, 0.15, 24);
+        const bandMat = new THREE.MeshBasicMaterial({ color: 0x60a5fa });
+        const band = new THREE.Mesh(bandGeo, bandMat);
+        band.position.set(-2.3, 0.35 + siloH - 0.35, -1.3 + i * 1.3);
+        group.add(band);
+      }
+
+      // 4x4 Matrix of Animated 3D Volumetric Bar Chart Towers
+      const gridStartX = -0.7;
+      const gridStartZ = -1.5;
+      const spacing = 0.85;
+      const initialHeights = BI_METRICS.volume.heights;
+
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 4; col++) {
+          const idx = row * 4 + col;
+          // Unit height box so scaling Y smoothly animates height from base
+          const barGeo = new THREE.BoxGeometry(0.54, 1.0, 0.54);
+          barGeo.translate(0, 0.5, 0); // Anchor at bottom!
+
+          const barMat = registerMaterial(new THREE.MeshStandardMaterial({
+            color: 0x3b82f6,
+            emissive: 0x1d4ed8,
+            emissiveIntensity: 0.45,
+            metalness: 0.5,
+            roughness: 0.2
+          }));
+
+          const bar = new THREE.Mesh(barGeo, barMat);
+          bar.position.set(gridStartX + col * spacing, 0.35, gridStartZ + row * spacing);
+          const targetH = initialHeights[idx] * 0.55;
+          bar.scale.y = targetH;
+          registerStationHitbox(bar, 2);
+          group.add(bar);
+
+          biBarMeshes.push({
+            mesh: bar,
+            currentH: targetH,
+            targetH: targetH,
+            index: idx
+          });
         }
+      }
+
+      // Floating 3D Scatter / Predictive Surface Wave Above BI Matrix
+      const surfGeo = new THREE.BufferGeometry();
+      const surfCount = 36;
+      const positions = new Float32Array(surfCount * 3);
+      let ptr = 0;
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          positions[ptr++] = -0.8 + c * 0.55;
+          positions[ptr++] = 4.6 + Math.sin(r * 0.8 + c * 0.8) * 0.35;
+          positions[ptr++] = -1.6 + r * 0.62;
+        }
+      }
+      surfGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const surfMat = new THREE.PointsMaterial({ color: 0xf59e0b, size: 0.18 });
+      biSurfacePoints = new THREE.Points(surfGeo, surfMat);
+      group.add(biSurfacePoints);
+
+      station3DGroups[2] = group;
+      scene.add(group);
     }
 
-    function renderRepos() {
-        const container = document.getElementById('projectsContainer');
-        const btn = document.getElementById('showMoreBtn');
-        const visible = allRepos.slice(0, showCount);
+    /*************************************************************************
+     * 6. STATION 03 [EAST: 14, 0, -4] — SOFTWARE & AGENTIC AI COMPUTE RACK
+     *************************************************************************/
+    function buildStation03ComputeRack() {
+      const group = new THREE.Group();
+      group.position.set(14, 0, -4);
+      createStationPedestal(group, 4.2, 0x8b5cf6, 3);
 
-        container.innerHTML = visible.map((r, i) => {
-            const desc = r.description
-                ? (r.description.length > 140 ? r.description.slice(0, 140) + '…' : r.description)
-                : 'No description provided.';
-            const date = new Date(r.updated_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-            const col = langColors[r.language] || 'var(--accent)';
-            return `
-                <div class="project-item fade-in" style="transition-delay:${i * 0.04}s">
-                    <div>
-                        <div class="project-name">
-                            <a href="${r.html_url}" target="_blank">${r.name}</a>
-                        </div>
-                        <div class="project-desc">${desc}</div>
-                        <div class="project-meta">
-                            <span><span class="lang-dot" style="background:${col}"></span> ${r.language || '—'}</span>
-                            <span>★ ${r.stargazers_count}</span>
-                            <span>⑂ ${r.forks_count}</span>
-                            <span>updated ${date}</span>
-                        </div>
-                    </div>
-                    <a href="${r.html_url}" target="_blank" class="project-link">view →</a>
-                </div>`;
-        }).join('');
+      // 3 Multi-Blade Server Rack Towers in Semicircle
+      const rackOffsets = [
+        { x: -1.6, z: -1.2, rotY: 0.35 },
+        { x: 0.0, z: -1.8, rotY: 0.0 },
+        { x: 1.6, z: -1.2, rotY: -0.35 }
+      ];
 
-        document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
+      rackOffsets.forEach((rk, idx) => {
+        const rackGeo = new THREE.BoxGeometry(1.15, 4.2, 0.9);
+        const rackMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: 0x161b2a,
+          metalness: 0.8,
+          roughness: 0.25,
+          emissive: 0x4c1d95,
+          emissiveIntensity: 0.2
+        }));
+        const rack = new THREE.Mesh(rackGeo, rackMat);
+        rack.position.set(rk.x, 2.45, rk.z);
+        rack.rotation.y = rk.rotY;
+        registerStationHitbox(rack, 3);
+        group.add(rack);
 
-        btn.textContent = showCount >= allRepos.length
-            ? 'Show Less'
-            : `Show More (${allRepos.length - showCount} remaining)`;
+        // Glowing Blade Server LED Strips on Front
+        for (let b = 0; b < 6; b++) {
+          const ledGeo = new THREE.BoxGeometry(0.85, 0.08, 0.94);
+          const ledColor = (b + idx) % 2 === 0 ? 0x8b5cf6 : 0x3b82f6;
+          const ledMat = new THREE.MeshBasicMaterial({ color: ledColor });
+          const led = new THREE.Mesh(ledGeo, ledMat);
+          led.position.set(rk.x, 1.0 + b * 0.55, rk.z);
+          led.rotation.y = rk.rotY;
+          group.add(led);
+        }
+      });
+
+      // Pulsing Agentic AI Neural Core Sphere + Rotating C++ Mutex Lock Rings in Foreground
+      const corePos = new THREE.Vector3(0, 2.5, 0.8);
+      const neuralGeo = new THREE.IcosahedronGeometry(0.72, 1);
+      const neuralMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x8b5cf6,
+        emissive: 0x7c3aed,
+        emissiveIntensity: 0.75,
+        wireframe: false,
+        metalness: 0.3,
+        roughness: 0.2
+      }));
+      const neuralCore = new THREE.Mesh(neuralGeo, neuralMat);
+      neuralCore.position.copy(corePos);
+      group.add(neuralCore);
+      sweNeuralCores.push(neuralCore);
+
+      // 2 Rotating C++ Concurrency Mutex Lock Rings
+      for (let m = 0; m < 2; m++) {
+        const mutexGeo = new THREE.TorusGeometry(1.15 + m * 0.32, 0.05, 12, 36, Math.PI * 1.55);
+        const mutexMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: m === 0 ? 0xf59e0b : 0x10b981,
+          emissive: m === 0 ? 0xd97706 : 0x059669,
+          emissiveIntensity: 0.55
+        }));
+        const mutexRing = new THREE.Mesh(mutexGeo, mutexMat);
+        mutexRing.position.copy(corePos);
+        group.add(mutexRing);
+        sweMutexRings.push({ mesh: mutexRing, dir: m === 0 ? 1 : -1 });
+      }
+
+      station3DGroups[3] = group;
+      scene.add(group);
     }
 
-    document.getElementById('showMoreBtn').addEventListener('click', () => {
-        showCount = showCount >= allRepos.length ? 6 : allRepos.length;
-        renderRepos();
-    });
+    /*************************************************************************
+     * 7. STATION 04 [NORTH: 0, 0, -16] — EDGE IOT & HARDWARE TELEMETRY RIG
+     *************************************************************************/
+    function buildStation04EdgeIoTRig() {
+      const group = new THREE.Group();
+      group.position.set(0, 0, -16);
+      createStationPedestal(group, 4.2, 0x10b981, 4);
 
-    // ── Theme Toggle ──
-    function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-    }
+      // Square Emerald PCB Substrate Board
+      const pcbGeo = new THREE.BoxGeometry(4.6, 0.22, 4.6);
+      const pcbMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x064e3b,
+        emissive: 0x047857,
+        emissiveIntensity: 0.25,
+        metalness: 0.5,
+        roughness: 0.4
+      }));
+      const pcb = new THREE.Mesh(pcbGeo, pcbMat);
+      pcb.position.y = 0.45;
+      registerStationHitbox(pcb, 4);
+      group.add(pcb);
 
-    // ── Sidebar Toggle (mobile) ──
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('sidebarOverlay').classList.toggle('show');
-    }
+      // ESP32 Microcontroller Silicon Die Package in Center of PCB
+      const chipGeo = new THREE.BoxGeometry(1.4, 0.3, 1.4);
+      const chipMat = registerMaterial(new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        metalness: 0.8,
+        roughness: 0.2
+      }));
+      const chip = new THREE.Mesh(chipGeo, chipMat);
+      chip.position.y = 0.7;
+      group.add(chip);
 
-    document.querySelectorAll('.sidebar-nav a').forEach(a => {
-        a.addEventListener('click', () => {
-            if (window.innerWidth <= 768) toggleSidebar();
+      // Gold IC Pins along Chip Perimeter
+      for (let i = -2; i <= 2; i++) {
+        const pinGeo = new THREE.BoxGeometry(1.75, 0.08, 0.08);
+        const pinMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+        const pinX = new THREE.Mesh(pinGeo, pinMat);
+        pinX.position.set(0, 0.65, i * 0.25);
+        group.add(pinX);
+
+        const pinZ = new THREE.Mesh(pinGeo, pinMat);
+        pinZ.rotation.y = Math.PI / 2;
+        pinZ.position.set(i * 0.25, 0.65, 0);
+        group.add(pinZ);
+      }
+
+      // 3-Axis MPU6050 Accelerometer Gimbal Above Chip
+      const gimbalY = 2.65;
+      const gColors = [0x10b981, 0xf59e0b, 0x3b82f6];
+      for (let g = 0; g < 3; g++) {
+        const gGeo = new THREE.TorusGeometry(0.95 + g * 0.35, 0.045, 12, 48);
+        const gMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: gColors[g],
+          emissive: gColors[g],
+          emissiveIntensity: 0.5
+        }));
+        const gRing = new THREE.Mesh(gGeo, gMat);
+        gRing.position.y = gimbalY;
+        group.add(gRing);
+        iotGimbalRings.push({ mesh: gRing, axis: g });
+      }
+
+      // Expanding Seismic P-Wave Rings
+      for (let w = 0; w < 2; w++) {
+        const waveGeo = new THREE.RingGeometry(1.2, 1.32, 48);
+        const waveMat = new THREE.MeshBasicMaterial({
+          color: 0x10b981,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.7
         });
-    });
+        const wave = new THREE.Mesh(waveGeo, waveMat);
+        wave.rotation.x = -Math.PI / 2;
+        wave.position.y = 0.62;
+        group.add(wave);
+        iotSeismicWaves.push({ mesh: wave, phase: w * 0.5 });
+      }
 
-    // ── Active nav highlight ──
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.sidebar-nav a');
-    function highlightNav() {
-        let current = '';
-        sections.forEach(s => {
-            if (window.scrollY >= s.offsetTop - 200) current = s.id;
-        });
-        navLinks.forEach(a => {
-            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-        });
+      station3DGroups[4] = group;
+      scene.add(group);
     }
-    window.addEventListener('scroll', highlightNav);
 
-    // ── Scroll Animations ──
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.classList.add('visible');
-                observer.unobserve(e.target);
-            }
+    /*************************************************************************
+     * 8. STATION 05 [SOUTH: 0, 0, 13] — SKILL MATRIX & TELEMETRY TERMINAL
+     *************************************************************************/
+    function buildStation05SkillMatrix() {
+      const group = new THREE.Group();
+      group.position.set(0, 0, 13);
+      createStationPedestal(group, 4.4, 0xf59e0b, 5);
+
+      // Arrange 15 Hexagonal Crystalline Pillars in Honeycomb Formation
+      const hexCoords = [];
+      const rings = [
+        [{ x: 0, z: 0 }],
+        [
+          { x: 1.0, z: 0 }, { x: 0.5, z: 0.86 }, { x: -0.5, z: 0.86 },
+          { x: -1.0, z: 0 }, { x: -0.5, z: -0.86 }, { x: 0.5, z: -0.86 }
+        ],
+        [
+          { x: 2.0, z: 0 }, { x: 1.5, z: 0.86 }, { x: 1.0, z: 1.73 }, { x: 0, z: 1.73 },
+          { x: -1.0, z: 1.73 }, { x: -1.5, z: 0.86 }, { x: -2.0, z: 0 }, { x: 0, z: -1.73 }
+        ]
+      ];
+      rings.forEach(r => r.forEach(c => hexCoords.push(c)));
+
+      SKILL_NODES_DATA.forEach((sk, idx) => {
+        const pos = hexCoords[idx] || { x: 0, z: 0 };
+        const hexGeo = new THREE.CylinderGeometry(0.38, 0.38, 1.0, 6);
+        hexGeo.translate(0, 0.5, 0);
+
+        const hexMat = registerMaterial(new THREE.MeshStandardMaterial({
+          color: sk.color,
+          emissive: sk.color,
+          emissiveIntensity: 0.38,
+          metalness: 0.65,
+          roughness: 0.2
+        }));
+
+        const pillar = new THREE.Mesh(hexGeo, hexMat);
+        pillar.position.set(pos.x * 1.15, 0.35, pos.z * 1.15);
+        const hScaled = sk.h * 0.68;
+        pillar.scale.y = hScaled;
+        registerStationHitbox(pillar, 5);
+        group.add(pillar);
+
+        skillHexPillars.push({
+          mesh: pillar,
+          baseH: hScaled,
+          phase: idx * 0.45,
+          category: sk.category
         });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      });
 
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+      station3DGroups[5] = group;
+      scene.add(group);
+    }
 
-    // ── Contact Form ──
-    const form = document.getElementById('contactForm');
-    const status = document.getElementById('formStatus');
-    form.addEventListener('submit', async (e) => {
+    /*************************************************************************
+     * 9. HIGH-THROUGHPUT PARTICLE STREAM ALONG ETL CONDUITS + STARFIELD
+     *************************************************************************/
+    function buildPipelineParticleStream() {
+      const particleCount = 260;
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+
+      const routes = [
+        { start: new THREE.Vector3(0, 0.22, 0), end: new THREE.Vector3(-14, 0.22, -4), color: new THREE.Color(0x3b82f6) },
+        { start: new THREE.Vector3(0, 0.22, 0), end: new THREE.Vector3(14, 0.22, -4), color: new THREE.Color(0x8b5cf6) },
+        { start: new THREE.Vector3(0, 0.22, 0), end: new THREE.Vector3(0, 0.22, -16), color: new THREE.Color(0x10b981) },
+        { start: new THREE.Vector3(0, 0.22, 0), end: new THREE.Vector3(0, 0.22, 13), color: new THREE.Color(0xf59e0b) }
+      ];
+
+      for (let i = 0; i < particleCount; i++) {
+        const route = routes[i % routes.length];
+        const t = Math.random();
+        pipelineParticleData.push({
+          routeIdx: i % routes.length,
+          t: t,
+          speed: 0.22 + Math.random() * 0.25,
+          start: route.start,
+          end: route.end
+        });
+
+        positions[i * 3] = THREE.MathUtils.lerp(route.start.x, route.end.x, t);
+        positions[i * 3 + 1] = 0.25 + Math.sin(t * Math.PI) * 0.35;
+        positions[i * 3 + 2] = THREE.MathUtils.lerp(route.start.z, route.end.z, t);
+
+        colors[i * 3] = route.color.r;
+        colors[i * 3 + 1] = route.color.g;
+        colors[i * 3 + 2] = route.color.b;
+      }
+
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 0.28,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.92
+      });
+
+      pipelineParticles = new THREE.Points(geo, mat);
+      scene.add(pipelineParticles);
+    }
+
+    function buildAmbientStarfield() {
+      const count = 450;
+      const geo = new THREE.BufferGeometry();
+      const pos = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        pos[i * 3] = (Math.random() - 0.5) * 110;
+        pos[i * 3 + 1] = 2 + Math.random() * 38;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * 110;
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const mat = new THREE.PointsMaterial({
+        color: 0x64748b,
+        size: 0.14,
+        transparent: true,
+        opacity: 0.45
+      });
+      scene.add(new THREE.Points(geo, mat));
+    }
+
+    /*************************************************************************
+     * 10. 3D WORLD-TO-SCREEN FLOATING TELEMETRY NODE BADGES
+     *************************************************************************/
+    function createFloatingStationBadges() {
+      const layer = document.getElementById('labels-layer');
+      layer.innerHTML = '';
+
+      [1, 2, 3, 4, 5].forEach(id => {
+        const st = STATIONS[id];
+        const badge = document.createElement('button');
+        badge.className = `node-badge hud-panel px-2.5 py-1.5 rounded-lg border border-slate-700/80 text-left flex items-center gap-2 shadow-xl group`;
+        badge.onclick = (e) => {
+          e.stopPropagation();
+          flyToStation(id);
+        };
+
+        badge.innerHTML = `
+          <span class="relative flex h-2 w-2">
+            <span class="animate-pulse-ring absolute inline-flex h-full w-full rounded-full opacity-75" style="background-color: ${st.color}"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2" style="background-color: ${st.color}"></span>
+          </span>
+          <div>
+            <div class="font-mono text-[10px] font-bold tracking-wider text-white group-hover:text-amber-400 transition-colors">${st.shortTag}</div>
+            <div class="font-mono text-[9px] text-slate-400 hidden sm:block">${st.domainBadge}</div>
+          </div>
+        `;
+
+        layer.appendChild(badge);
+        floatingBadges[id] = badge;
+      });
+    }
+
+    function updateWorldToScreenLabels() {
+      const halfW = window.innerWidth / 2;
+      const halfH = window.innerHeight / 2;
+
+      [1, 2, 3, 4, 5].forEach(id => {
+        const st = STATIONS[id];
+        const badge = floatingBadges[id];
+        if (!badge) return;
+
+        const worldVec = new THREE.Vector3(st.coords.x, st.coords.y, st.coords.z);
+        worldVec.project(camera);
+
+        // Hide if behind camera frustum
+        if (worldVec.z > 1.0) {
+          badge.style.opacity = '0';
+          badge.style.pointerEvents = 'none';
+          return;
+        }
+
+        const screenX = (worldVec.x * halfW) + halfW;
+        const screenY = -(worldVec.y * halfH) + halfH;
+
+        badge.style.left = `${screenX}px`;
+        badge.style.top = `${screenY}px`;
+        badge.style.opacity = '1';
+        badge.style.pointerEvents = 'auto';
+      });
+
+      // Also update floating 3D BI Matrix banner above Station 02
+      const biBanner = document.getElementById('bi-floating-banner');
+      if (biBanner) {
+        const biVec = new THREE.Vector3(-13.5, 6.9, -4.0);
+        biVec.project(camera);
+        if (biVec.z < 1.0) {
+          const bx = (biVec.x * halfW) + halfW;
+          const by = -(biVec.y * halfH) + halfH;
+          biBanner.style.left = `${bx}px`;
+          biBanner.style.top = `${by}px`;
+          biBanner.style.opacity = '1';
+        } else {
+          biBanner.style.opacity = '0';
+        }
+      }
+    }
+
+    /*************************************************************************
+     * 11. CAMERA FLIGHT PATHS, ORBIT CONTROLS & RAYCASTING
+     *************************************************************************/
+    function setupInteractionListeners(domElement) {
+      let isPointerDown = false;
+      let isRightDrag = false;
+      let downX = 0, downY = 0;
+      let prevX = 0, prevY = 0;
+
+      domElement.addEventListener('pointerdown', (e) => {
+        isPointerDown = true;
+        isRightDrag = (e.button === 2 || e.shiftKey);
+        downX = prevX = e.clientX;
+        downY = prevY = e.clientY;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        // Hover cursor feedback via Raycaster
+        if (!isPointerDown) {
+          mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(clickableMeshes, false);
+          domElement.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+          return;
+        }
+
+        const dx = e.clientX - prevX;
+        const dy = e.clientY - prevY;
+        prevX = e.clientX;
+        prevY = e.clientY;
+
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) > 5) {
+          // User manually dragged camera: switch from scripted flight to spherical manual control
+          if (camState.isFlying) {
+            syncSphericalFromCurrentCamera();
+            camState.isFlying = false;
+          }
+          if (camState.autoOrbit) {
+            camState.autoOrbit = false;
+            updateAutoOrbitButtonUI();
+          }
+        }
+
+        if (isRightDrag) {
+          // Pan target across X/Z engineering floor
+          const panFactor = 0.035;
+          const forward = new THREE.Vector3();
+          camera.getWorldDirection(forward);
+          forward.y = 0;
+          forward.normalize();
+          const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+          camState.currentLookAt.addScaledVector(right, -dx * panFactor);
+          camState.currentLookAt.addScaledVector(forward, dy * panFactor);
+          camState.targetLookAt.copy(camState.currentLookAt);
+        } else {
+          // Orbit spherical angles around currentLookAt
+          camState.spherical.theta -= dx * 0.0065;
+          camState.spherical.phi = THREE.MathUtils.clamp(
+            camState.spherical.phi - dy * 0.0055,
+            0.22,
+            Math.PI / 2 - 0.06
+          );
+        }
+      });
+
+      window.addEventListener('pointerup', (e) => {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+
+        // If pointer barely moved, treat as 3D Raycast click!
+        const moveDist = Math.hypot(e.clientX - downX, e.clientY - downY);
+        if (moveDist < 6 && e.target === domElement) {
+          mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(clickableMeshes, false);
+          if (hits.length > 0 && hits[0].object.userData.stationId !== undefined) {
+            flyToStation(hits[0].object.userData.stationId);
+          }
+        }
+      });
+
+      domElement.addEventListener('contextmenu', e => e.preventDefault());
+
+      // Smooth Zoom via Wheel
+      domElement.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const btn = form.querySelector('button[type="submit"]');
-        btn.textContent = 'Sending...';
-        btn.disabled = true;
-        try {
-            const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
-            if (res.ok) {
-                status.className = 'form-status success';
-                status.textContent = '✓ Message sent successfully!';
-                form.reset();
-            } else throw new Error();
-        } catch {
-            status.className = 'form-status error';
-            status.textContent = '✗ Something went wrong. Email me directly.';
+        if (camState.isFlying) {
+          syncSphericalFromCurrentCamera();
+          camState.isFlying = false;
         }
-        btn.textContent = 'Send Message →';
-        btn.disabled = false;
-        setTimeout(() => { status.className = 'form-status'; }, 5000);
-    });
+        camState.spherical.radius = THREE.MathUtils.clamp(
+          camState.spherical.radius + e.deltaY * 0.018,
+          6.0,
+          56.0
+        );
+      }, { passive: false });
 
-    // ── Init ──
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchRepos();
-        highlightNav();
-    });
-</script>
+      // Window Resize Handler
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // Keyboard Shortcuts [0-5], [W], [S], [Q], [Escape]
+      window.addEventListener('keydown', (e) => {
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+          if (e.key === 'Escape') toggleSqlModal(false);
+          return;
+        }
+        if (e.key >= '0' && e.key <= '5') {
+          flyToStation(parseInt(e.key, 10));
+        } else if (e.key.toLowerCase() === 'w') {
+          toggleWireframeMode();
+        } else if (e.key.toLowerCase() === 's') {
+          triggerPipelineSurge();
+        } else if (e.key.toLowerCase() === 'q') {
+          toggleSqlModal();
+        } else if (e.key === 'Escape') {
+          toggleSqlModal(false);
+        }
+      });
+    }
+
+    function syncSphericalFromCurrentCamera() {
+      const offset = new THREE.Vector3().subVectors(camState.currentPos, camState.currentLookAt);
+      camState.spherical.radius = Math.max(6, offset.length());
+      camState.spherical.theta = Math.atan2(offset.x, offset.z);
+      camState.spherical.phi = THREE.MathUtils.clamp(
+        Math.acos(THREE.MathUtils.clamp(offset.y / camState.spherical.radius, -1, 1)),
+        0.22,
+        Math.PI / 2 - 0.06
+      );
+    }
+
+    function flyToStation(stationId) {
+      const st = STATIONS[stationId];
+      if (!st) return;
+
+      camState.targetPos.set(st.camPos.x, st.camPos.y, st.camPos.z);
+      camState.targetLookAt.set(st.lookAt.x, st.lookAt.y, st.lookAt.z);
+      camState.isFlying = true;
+
+      selectStation(stationId, false);
+
+      // Ensure Inspector Panel is visible on station selection
+      if (inspectorCollapsed) {
+        toggleInspector(false);
+      }
+    }
+
+    /*************************************************************************
+     * 12. HUD INSPECTOR RENDERING & INTERACTIVE CONTROLS
+     *************************************************************************/
+    let inspectorCollapsed = false;
+
+    function toggleInspector(forceState) {
+      const panel = document.getElementById('inspector-panel');
+      const icon = document.getElementById('inspector-toggle-icon');
+      inspectorCollapsed = forceState !== undefined ? forceState : !inspectorCollapsed;
+
+      if (inspectorCollapsed) {
+        panel.style.transform = 'translateX(calc(100% + 12px))';
+        icon.className = 'fa-solid fa-chevron-left text-xs';
+      } else {
+        panel.style.transform = 'translateX(0)';
+        icon.className = 'fa-solid fa-chevron-right text-xs';
+      }
+    }
+
+    function selectStation(stationId, isInitial) {
+      currentStationId = stationId;
+      const st = STATIONS[stationId];
+
+      // Update Top HUD Active Node Pill
+      const activeNodeEl = document.getElementById('hud-active-node');
+      if (activeNodeEl) activeNodeEl.textContent = st.shortTag;
+
+      // Update Bottom Dock Buttons Active State
+      [0, 1, 2, 3, 4, 5].forEach(id => {
+        const btn = document.getElementById(`dock-btn-${id}`);
+        if (!btn) return;
+        if (id === stationId) {
+          btn.className = "dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-semibold transition-all flex items-center gap-1.5 border bg-amber-500/20 border-amber-500 text-amber-300 shadow-lg";
+        } else {
+          btn.className = "dock-btn shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-300 hover:border-slate-600";
+        }
+      });
+
+      // Highlight Floating 3D World-to-Screen Badge
+      [1, 2, 3, 4, 5].forEach(id => {
+        const b = floatingBadges[id];
+        if (!b) return;
+        if (id === stationId) {
+          b.classList.add('active-badge');
+        } else {
+          b.classList.remove('active-badge');
+        }
+      });
+
+      // Highlight 3D Pedestal Selection Ring
+      [1, 2, 3, 4, 5].forEach(id => {
+        const ring = stationSelectionRings[id];
+        if (!ring) return;
+        ring.scale.setScalar(id === stationId ? 1.16 : 1.0);
+        ring.material.opacity = id === stationId ? 1.0 : 0.35;
+      });
+
+      // Populate Right-Side Engineering Inspector Panel
+      document.getElementById('insp-code').textContent = st.code;
+      document.getElementById('insp-domain-badge').textContent = st.domainBadge;
+      document.getElementById('insp-title').textContent = st.title;
+      document.getElementById('insp-subtitle').textContent = st.subtitle;
+      document.getElementById('insp-chart-title').innerHTML = `
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+        ${st.chartTitle}
+      `;
+      document.getElementById('insp-chart-metric').textContent = st.chartMetric;
+
+      const body = document.getElementById('insp-body');
+      let html = `
+        <!-- Architectural Summary Box -->
+        <div class="p-3 rounded-lg bg-obsidian/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+          ${st.summary}
+        </div>
+
+        <!-- Station Highlights 2x2 Telemetry Grid -->
+        <div class="grid grid-cols-2 gap-2">
+          ${st.highlights.map(h => `
+            <div class="p-2.5 rounded-lg bg-slate-900/75 border border-slate-800/90">
+              <div class="font-mono text-[9px] uppercase text-slate-500">${h.label}</div>
+              <div class="font-mono text-[11px] font-semibold text-white mt-0.5">${h.value}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // If Station 02 is selected, include an inline 3D Bar Chart Switcher inside the Inspector too!
+      if (stationId === 2) {
+        html += `
+          <div class="p-3 rounded-lg bg-cobalt-500/10 border border-cobalt-500/30">
+            <div class="font-mono text-[10px] text-cobalt-400 font-bold uppercase mb-1.5">
+              <i class="fa-solid fa-cubes mr-1"></i>INTERACTIVE 3D VOLUMETRIC BAR MATRIX CONTROL
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 font-mono text-[10px]">
+              <button onclick="setBIMetric('volume')" class="py-1.5 px-2 rounded border ${currentBIMetricKey === 'volume' ? 'border-amber-400 bg-amber-500/20 text-amber-300' : 'border-slate-700 bg-obsidian/70 text-slate-300'}">Data Volume</button>
+              <button onclick="setBIMetric('accuracy')" class="py-1.5 px-2 rounded border ${currentBIMetricKey === 'accuracy' ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300' : 'border-slate-700 bg-obsidian/70 text-slate-300'}">Accuracy %</button>
+              <button onclick="setBIMetric('speedup')" class="py-1.5 px-2 rounded border ${currentBIMetricKey === 'speedup' ? 'border-amber-400 bg-amber-500/20 text-amber-300' : 'border-slate-700 bg-obsidian/70 text-slate-300'}">Query Speedup</button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Project Cards Section Header
+      html += `
+        <div class="pt-1">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-[10px] uppercase tracking-wider text-amber-400 font-semibold">
+              <i class="fa-solid fa-diagram-project mr-1"></i>DEPLOYED ENGINEERING SYSTEMS (${st.projects.length})
+            </span>
+            <span class="font-mono text-[10px] text-slate-500">VERIFIED REPOS</span>
+          </div>
+          <div class="space-y-2.5">
+            ${st.projects.map(p => `
+              <div class="p-3 rounded-xl bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <div class="font-mono text-[10px] text-cobalt-400">${p.domain}</div>
+                    <h4 class="font-display font-bold text-sm text-white">${p.title}</h4>
+                  </div>
+                  ${p.stationJump ? `
+                    <button onclick="flyToStation(${p.stationJump})" class="shrink-0 px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-mono text-[10px]">
+                      FLY TO ST-0${p.stationJump} &rarr;
+                    </button>
+                  ` : (p.github ? `
+                    <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-[10px] flex items-center gap-1">
+                      <i class="fa-brands fa-github"></i> CODE
+                    </a>
+                  ` : '')}
+                </div>
+
+                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 font-mono text-[10px] text-emerald-300">
+                  <i class="fa-solid fa-gauge-high text-[9px]"></i> ${p.metrics}
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">${p.desc}</p>
+
+                <!-- Architecture Schematic Flow -->
+                <div class="p-2 rounded bg-obsidian/90 border border-slate-800/90 font-mono text-[10px] text-amber-300/90 overflow-x-auto whitespace-nowrap">
+                  <span class="text-slate-500 mr-1">ARCH:</span> ${p.schematic}
+                </div>
+
+                <!-- Tech Stack Pills -->
+                <div class="flex flex-wrap gap-1 pt-0.5">
+                  ${p.stack.map(tag => `
+                    <span class="px-2 py-0.5 rounded bg-obsidian border border-slate-800 font-mono text-[10px] text-slate-300">${tag}</span>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      body.innerHTML = html;
+      body.scrollTop = 0;
+    }
+
+    // 3D BI Bar Chart Metric Switcher (Morphs physical 3D towers in Station 02)
+    function setBIMetric(metricKey) {
+      const m = BI_METRICS[metricKey];
+      if (!m) return;
+      currentBIMetricKey = metricKey;
+
+      // Update target heights and material colors on the 16 3D Bar Meshes
+      biBarMeshes.forEach((item, idx) => {
+        item.targetH = m.heights[idx] * 0.55;
+        item.mesh.material.color.setHex(m.colorHex);
+        item.mesh.material.emissive.setHex(m.emissiveHex);
+      });
+
+      // Update Floating 3D Banner text
+      const bannerLabel = document.getElementById('bi-banner-label');
+      if (bannerLabel) bannerLabel.textContent = m.label;
+
+      // Update Left HUD Metric Buttons
+      ['volume', 'accuracy', 'speedup'].forEach(k => {
+        const btn = document.getElementById(`metric-btn-${k}`);
+        if (!btn) return;
+        if (k === metricKey) {
+          btn.className = "metric-btn text-left px-2.5 py-1.5 rounded border border-amber-500/50 bg-amber-500/15 text-amber-300 flex items-center justify-between transition-all";
+        } else {
+          btn.className = "metric-btn text-left px-2.5 py-1.5 rounded border border-slate-800 bg-obsidian/60 text-slate-400 hover:text-slate-200 flex items-center justify-between transition-all";
+        }
+      });
+
+      showTelemetryToast(`3D BI FOUNDRY MORPHED: ${m.label}`);
+      if (currentStationId === 2) {
+        selectStation(2, false);
+      }
+    }
+
+    function cycleBIMetric() {
+      const order = ['volume', 'accuracy', 'speedup'];
+      const nextIdx = (order.indexOf(currentBIMetricKey) + 1) % order.length;
+      setBIMetric(order[nextIdx]);
+      flyToStation(2);
+    }
+
+    // Live CAD Wireframe / Schematic Mode Toggle
+    function toggleWireframeMode() {
+      isWireframeMode = !isWireframeMode;
+      ToggleableMaterials.forEach(mat => {
+        mat.wireframe = isWireframeMode;
+      });
+
+      const badge = document.getElementById('wireframe-badge');
+      const btn = document.getElementById('btn-wireframe');
+      if (isWireframeMode) {
+        badge.textContent = 'ON';
+        badge.className = 'px-1 rounded text-[9px] bg-cobalt-500 text-obsidian font-bold';
+        btn.classList.add('border-cobalt-400');
+        showTelemetryToast('CAD WIREFRAME / SCHEMATIC BLUEPRINT MODE ACTIVE');
+      } else {
+        badge.textContent = 'OFF';
+        badge.className = 'px-1 rounded text-[9px] bg-slate-900 text-slate-400';
+        btn.classList.remove('border-cobalt-400');
+        showTelemetryToast('VOLUMETRIC SHADED RENDERING RESTORED');
+      }
+    }
+
+    // High-Throughput ETL Surge Simulator
+    function triggerPipelineSurge() {
+      surgeTimer = 3.8; // 3.8 seconds of overclocked particle burst
+      const fluxEl = document.getElementById('hud-flux-readout');
+      if (fluxEl) {
+        fluxEl.textContent = '19.40 GB/s [SURGE BURST]';
+        fluxEl.className = 'text-amber-400 font-bold animate-pulse';
+      }
+      if (pipelineParticles) {
+        pipelineParticles.material.size = 0.44;
+      }
+      showTelemetryToast('ETL PIPELINE SURGE SIMULATOR: 19.4 GB/s BURST ACROSS ALL CONDUITS');
+    }
+
+    function updateThroughputSpeed(val) {
+      conduitSpeedMultiplier = parseFloat(val);
+      document.getElementById('throughput-val').textContent = `${conduitSpeedMultiplier.toFixed(1)}x`;
+      const fluxEl = document.getElementById('hud-flux-readout');
+      if (fluxEl && surgeTimer <= 0) {
+        fluxEl.textContent = `${(4.82 * conduitSpeedMultiplier).toFixed(2)} GB/s [NOMINAL]`;
+      }
+    }
+
+    function toggleAutoOrbit() {
+      camState.autoOrbit = !camState.autoOrbit;
+      if (camState.autoOrbit && camState.isFlying) {
+        syncSphericalFromCurrentCamera();
+        camState.isFlying = false;
+      }
+      updateAutoOrbitButtonUI();
+    }
+
+    function updateAutoOrbitButtonUI() {
+      const btn = document.getElementById('btn-auto-orbit');
+      const icon = document.getElementById('orbit-icon');
+      if (!btn || !icon) return;
+      if (camState.autoOrbit) {
+        btn.className = "shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-emerald-500/15 border-emerald-500/40 text-emerald-300";
+        icon.classList.add('animate-spin');
+      } else {
+        btn.className = "shrink-0 px-2.5 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center gap-1.5 border bg-obsidian/70 border-slate-800 text-slate-400";
+        icon.classList.remove('animate-spin');
+      }
+    }
+
+    let toastTimeout = null;
+    function showTelemetryToast(message) {
+      const toast = document.getElementById('telemetry-toast');
+      const text = document.getElementById('telemetry-toast-text');
+      if (!toast || !text) return;
+      text.textContent = message;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translate(-50%, 0)';
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translate(-50%, -8px)';
+      }, 2600);
+    }
+
+    /*************************************************************************
+     * 13. INTERACTIVE SQL / PIPELINE QUERY ENGINE ("QUERY ASWIN'S DATA LAKE")
+     *************************************************************************/
+    function toggleSqlModal(forceState) {
+      const modal = document.getElementById('sql-modal');
+      const isHidden = modal.classList.contains('hidden');
+      const nextShow = forceState !== undefined ? forceState : isHidden;
+
+      if (nextShow) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function runPresetQuery(presetIdx) {
+      const sqlInput = document.getElementById('sql-input-box');
+      if (presetIdx === 0) {
+        sqlInput.value = "SELECT * FROM projects WHERE domain = 'DATA_ENGINEERING' ORDER BY updated DESC;";
+        renderSqlProjectsTable(DATA_LAKE_CATALOG.filter(r => r.domain === 'DATA_ENGINEERING').sort((a, b) => b.updated.localeCompare(a.updated)));
+      } else if (presetIdx === 1) {
+        sqlInput.value = "EXPLAIN ANALYZE SELECT skill, proficiency, projects FROM stack WHERE category IN ('SWE', 'AI_ML');";
+        renderSqlSkillsTable(SKILL_NODES_DATA.filter(s => s.category === 'SWE' || s.category === 'AI_ML'));
+      } else if (presetIdx === 2) {
+        sqlInput.value = "SELECT * FROM projects WHERE domain IN ('AI_ML','SWE');";
+        renderSqlProjectsTable(DATA_LAKE_CATALOG.filter(r => r.domain === 'AI_ML' || r.domain === 'SWE'));
+      } else if (presetIdx === 3) {
+        sqlInput.value = "SELECT * FROM projects WHERE domain = 'IOT_EDGE';";
+        renderSqlProjectsTable(DATA_LAKE_CATALOG.filter(r => r.domain === 'IOT_EDGE'));
+      } else {
+        sqlInput.value = "SELECT * FROM observatory_catalog ORDER BY station_id ASC;";
+        renderSqlProjectsTable(DATA_LAKE_CATALOG);
+      }
+    }
+
+    function filterSqlTableByKeyword(rawText) {
+      const q = rawText.toLowerCase().trim();
+      if (q.startsWith('select')) return;
+      if (!q || q.startsWith('select * from observatory_catalog')) {
+        renderSqlProjectsTable(DATA_LAKE_CATALOG);
+        return;
+      }
+      const filtered = DATA_LAKE_CATALOG.filter(item =>
+        item.name.toLowerCase().includes(q) ||
+        item.domain.toLowerCase().includes(q) ||
+        item.stack.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q)
+      );
+      renderSqlProjectsTable(filtered.length > 0 ? filtered : DATA_LAKE_CATALOG);
+    }
+
+    function runSqlQuery(raw) {
+      const q = raw.trim().replace(/;\s*$/, '');
+      const fromM = q.match(/\bfrom\s+([a-z_]+)/i);
+      const table = fromM ? fromM[1].toLowerCase() : 'projects';
+      const isSkills = table === 'stack' || table === 'skills';
+      const fieldMap = { domain: 'domain', category: 'category', stack: 'stack', name: 'name', id: 'id', station: 'stationName', station_id: 'stationId', updated: 'updated', skill: 'skill', proficiency: 'proficiency', projects: 'projects' };
+      const looseFields = ['stack', 'name', 'projects', 'skill', 'station'];
+      let rows = (isSkills ? SKILL_NODES_DATA : DATA_LAKE_CATALOG).slice();
+
+      const w = q.match(/\bwhere\b([\s\S]*?)(\border\s+by\b|\blimit\b|$)/i);
+      if (w) {
+        w[1].split(/\band\b/i).forEach(c => {
+          c = c.trim();
+          let m;
+          if (!c) return;
+          if ((m = c.match(/^(\w+)\s+in\s*\(([^)]*)\)$/i))) {
+            const f = fieldMap[m[1].toLowerCase()];
+            const vals = m[2].split(',').map(s => s.trim().replace(/^['"]|['"]$/g, '').toLowerCase());
+            if (f) rows = rows.filter(r => vals.includes(String(r[f]).toLowerCase()));
+          } else if ((m = c.match(/^(\w+)\s+i?like\s+['"]%?([^'"%]*)%?['"]$/i))) {
+            const f = fieldMap[m[1].toLowerCase()];
+            if (f) rows = rows.filter(r => String(r[f]).toLowerCase().includes(m[2].toLowerCase()));
+          } else if ((m = c.match(/^(\w+)\s*(=|!=|<>)\s*['"]?([^'"]*?)['"]?$/i))) {
+            const f = fieldMap[m[1].toLowerCase()];
+            const v = m[3].toLowerCase();
+            if (!f) return;
+            const hit = r => looseFields.includes(m[1].toLowerCase())
+              ? String(r[f]).toLowerCase().includes(v)
+              : String(r[f]).toLowerCase() === v;
+            rows = rows.filter(r => (m[2] === '=' ? hit(r) : !hit(r)));
+          }
+        });
+      }
+
+      const o = q.match(/\border\s+by\s+(\w+)(?:\s+(asc|desc))?/i);
+      if (o && fieldMap[o[1].toLowerCase()]) {
+        const f = fieldMap[o[1].toLowerCase()];
+        const dir = (o[2] || 'asc').toLowerCase() === 'desc' ? -1 : 1;
+        rows.sort((a, b) => String(a[f]).localeCompare(String(b[f]), undefined, { numeric: true }) * dir);
+      }
+      const l = q.match(/\blimit\s+(\d+)/i);
+      if (l) rows = rows.slice(0, parseInt(l[1], 10));
+
+      if (isSkills) renderSqlSkillsTable(rows); else renderSqlProjectsTable(rows);
+    }
+
+    function executeCustomSqlBox() {
+      const raw = document.getElementById('sql-input-box').value;
+      if (/^\s*select\b/i.test(raw)) {
+        runSqlQuery(raw);
+      } else {
+        const q = raw.toLowerCase().trim();
+        const rows = DATA_LAKE_CATALOG.filter(i => (i.name + ' ' + i.domain + ' ' + i.stack + ' ' + i.category).toLowerCase().includes(q));
+        renderSqlProjectsTable(rows);
+      }
+      triggerPipelineSurge();
+      showTelemetryToast('SQL QUERY EXECUTED & SYNCHRONIZED WITH 3D NODES');
+    }
+
+    function renderSqlProjectsTable(rows) {
+      const head = document.getElementById('sql-table-head');
+      const body = document.getElementById('sql-table-body');
+      document.getElementById('sql-row-count').textContent = `${rows.length} rows returned`;
+      document.getElementById('sql-exec-time').textContent = `(${(0.24 + Math.random() * 0.35).toFixed(2)} ms)`;
+
+      head.innerHTML = `
+        <th class="py-2.5 px-3">ID</th>
+        <th class="py-2.5 px-3">Engineering System / Project</th>
+        <th class="py-2.5 px-3">Domain</th>
+        <th class="py-2.5 px-3">Tech Stack</th>
+        <th class="py-2.5 px-3">Last Updated</th>
+        <th class="py-2.5 px-3">3D Station Node</th>
+      `;
+
+      body.innerHTML = rows.map(r => `
+        <tr onclick="toggleSqlModal(false); flyToStation(${r.stationId});" class="hover:bg-amber-500/10 cursor-pointer transition-colors group">
+          <td class="py-2.5 px-3 text-slate-400">${r.id}</td>
+          <td class="py-2.5 px-3 font-semibold text-white group-hover:text-amber-300">${r.name}</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-cobalt-300 text-[10px]">${r.domain}</span></td>
+          <td class="py-2.5 px-3 text-slate-300">${r.stack}</td>
+          <td class="py-2.5 px-3 text-emerald-400 font-semibold">${r.updated}</td>
+          <td class="py-2.5 px-3 text-amber-400 font-semibold flex items-center gap-1">
+            <span>${r.stationName}</span> <i class="fa-solid fa-location-arrow text-[10px]"></i>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSqlSkillsTable(skills) {
+      const head = document.getElementById('sql-table-head');
+      const body = document.getElementById('sql-table-body');
+      document.getElementById('sql-row-count').textContent = `${skills.length} skills analyzed`;
+      document.getElementById('sql-exec-time').textContent = `(0.19 ms)`;
+
+      head.innerHTML = `
+        <th class="py-2.5 px-3">Skill / Technology</th>
+        <th class="py-2.5 px-3">Cluster Category</th>
+        <th class="py-2.5 px-3">Verified Proficiency</th>
+        <th class="py-2.5 px-3">Production Application</th>
+        <th class="py-2.5 px-3">3D Action</th>
+      `;
+
+      body.innerHTML = skills.map(s => `
+        <tr onclick="toggleSqlModal(false); flyToStation(5);" class="hover:bg-violet-500/15 cursor-pointer transition-colors">
+          <td class="py-2.5 px-3 font-bold text-white">${s.skill}</td>
+          <td class="py-2.5 px-3 text-violet-300">${s.category}</td>
+          <td class="py-2.5 px-3 text-emerald-400 font-bold">${s.proficiency}</td>
+          <td class="py-2.5 px-3 text-slate-300">${s.projects}</td>
+          <td class="py-2.5 px-3 text-amber-400">FLY TO ST-05 HEX MATRIX &rarr;</td>
+        </tr>
+      `).join('');
+    }
+
+
+    /*************************************************************************
+     * 14. LIVE HTML5 CANVAS TELEMETRY MINI-OSCILLOSCOPE IN INSPECTOR
+     *************************************************************************/
+    let telemetryPhase = 0;
+    function drawInspectorTelemetryCanvas() {
+      const canvas = document.getElementById('station-telemetry-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Subtle background grid lines
+      ctx.strokeStyle = 'rgba(51, 65, 85, 0.35)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+      for (let x = 0; x < w; x += 40) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+      }
+      ctx.stroke();
+
+      telemetryPhase += 0.06 * (surgeTimer > 0 ? 2.5 : 1.0);
+      const st = STATIONS[currentStationId] || STATIONS[1];
+
+      // Draw primary waveform tailored to active station
+      ctx.strokeStyle = st.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      for (let x = 0; x < w; x++) {
+        let y = h / 2;
+        if (st.chartType === 'etl') {
+          y = h / 2 + Math.sin(x * 0.035 + telemetryPhase) * 14 + Math.cos(x * 0.08 - telemetryPhase) * 6;
+        } else if (st.chartType === 'compute') {
+          const step = Math.sin(x * 0.05 + telemetryPhase) > 0 ? 12 : -12;
+          y = h / 2 + step * 0.7 + Math.sin(x * 0.15 - telemetryPhase * 2) * 5;
+        } else if (st.chartType === 'seismic') {
+          const env = Math.sin(x * 0.02 + telemetryPhase * 0.5);
+          y = h / 2 + Math.sin(x * 0.22 + telemetryPhase * 3) * (env * 19);
+        } else {
+          y = h / 2 + Math.sin(x * 0.04 + telemetryPhase) * 12 * Math.sin(x * 0.01 + telemetryPhase * 0.4);
+        }
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Secondary reference harmonic wave
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.55)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y2 = h / 2 + Math.cos(x * 0.03 - telemetryPhase * 0.8) * 10;
+        if (x === 0) ctx.moveTo(x, y2);
+        else ctx.lineTo(x, y2);
+      }
+      ctx.stroke();
+    }
+
+    /*************************************************************************
+     * 15. MAIN ANIMATION & RENDER LOOP
+     *************************************************************************/
+    let frameCount = 0;
+    let lastFpsTime = performance.now();
+
+    function animateObservatory() {
+      requestAnimationFrame(animateObservatory);
+
+      const dt = Math.min(clock.getDelta(), 0.1);
+      const elapsed = clock.getElapsedTime();
+
+      // FPS Counter update
+      frameCount++;
+      const now = performance.now();
+      if (now - lastFpsTime >= 1000) {
+        const fpsEl = document.getElementById('fps-counter');
+        if (fpsEl) fpsEl.textContent = `${frameCount} FPS`;
+        frameCount = 0;
+        lastFpsTime = now;
+      }
+
+      // 1. Update Camera Position (Smooth Flight Lerp OR Spherical Orbit)
+      if (camState.isFlying) {
+        const lerpAlpha = 1.0 - Math.exp(-3.8 * dt);
+        camState.currentPos.lerp(camState.targetPos, lerpAlpha);
+        camState.currentLookAt.lerp(camState.targetLookAt, lerpAlpha);
+
+        if (camState.currentPos.distanceTo(camState.targetPos) < 0.08) {
+          syncSphericalFromCurrentCamera();
+          camState.isFlying = false;
+        }
+      } else {
+        if (camState.autoOrbit) {
+          camState.spherical.theta += camState.orbitSpeed * dt;
+        }
+        const r = camState.spherical.radius;
+        const sinPhi = Math.sin(camState.spherical.phi);
+        camState.currentPos.x = camState.currentLookAt.x + r * sinPhi * Math.sin(camState.spherical.theta);
+        camState.currentPos.y = camState.currentLookAt.y + r * Math.cos(camState.spherical.phi);
+        camState.currentPos.z = camState.currentLookAt.z + r * sinPhi * Math.cos(camState.spherical.theta);
+      }
+
+      camera.position.copy(camState.currentPos);
+      camera.lookAt(camState.currentLookAt);
+
+      // Update Top HUD Camera Coordinates Readout
+      const coordEl = document.getElementById('hud-cam-coords');
+      if (coordEl && frameCount % 4 === 0) {
+        coordEl.textContent = `${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}`;
+      }
+
+      // 2. Animate Station 01: Core Architect Gyroscope & Satellites
+      coreGyroRings.forEach(item => {
+        item.mesh.rotation.x += item.rx * dt;
+        item.mesh.rotation.y += item.ry * dt;
+        item.mesh.rotation.z += item.rz * dt;
+      });
+
+      coreSatellites.forEach(sat => {
+        sat.angle += sat.speed * dt;
+        sat.mesh.position.set(
+          Math.cos(sat.angle) * sat.radius,
+          sat.yOffset + Math.sin(elapsed * 2.0 + sat.angle) * 0.25,
+          Math.sin(sat.angle) * sat.radius
+        );
+        sat.mesh.rotation.y += 1.5 * dt;
+      });
+
+      // 3. Animate Station 02: 3D Volumetric Bar Chart Towers Smooth Lerp + Surface Plot
+      biBarMeshes.forEach(bar => {
+        const breathe = Math.sin(elapsed * 2.2 + bar.index * 0.4) * 0.08;
+        bar.currentH = THREE.MathUtils.lerp(bar.currentH, bar.targetH + breathe, 4.5 * dt);
+        bar.mesh.scale.y = Math.max(0.2, bar.currentH);
+      });
+
+      if (biSurfacePoints) {
+        const posArr = biSurfacePoints.geometry.attributes.position.array;
+        let pIdx = 0;
+        for (let r = 0; r < 6; r++) {
+          for (let c = 0; c < 6; c++) {
+            posArr[pIdx + 1] = 4.7 + Math.sin(elapsed * 2.4 + r * 0.7 + c * 0.7) * 0.35;
+            pIdx += 3;
+          }
+        }
+        biSurfacePoints.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // 4. Animate Station 03: Agentic AI Neural Core & C++ Mutex Lock Rings
+      sweNeuralCores.forEach(core => {
+        const s = 1.0 + Math.sin(elapsed * 3.2) * 0.08;
+        core.scale.setScalar(s);
+        core.rotation.y += 0.9 * dt;
+      });
+
+      sweMutexRings.forEach((m, i) => {
+        m.mesh.rotation.z += m.dir * 1.4 * dt;
+        m.mesh.rotation.x = Math.sin(elapsed + i) * 0.45;
+      });
+
+      // 5. Animate Station 04: MPU6050 3-Axis Gimbal & Seismic P-Waves
+      iotGimbalRings.forEach((g, idx) => {
+        if (idx === 0) g.mesh.rotation.x = Math.sin(elapsed * 2.1) * 0.85;
+        if (idx === 1) g.mesh.rotation.y = elapsed * 1.5;
+        if (idx === 2) g.mesh.rotation.z = Math.cos(elapsed * 1.8) * 0.75;
+      });
+
+      iotSeismicWaves.forEach(w => {
+        w.phase = (w.phase + 0.45 * dt) % 1.0;
+        const scale = 0.6 + w.phase * 2.6;
+        w.mesh.scale.setScalar(scale);
+        w.mesh.material.opacity = (1.0 - w.phase) * 0.75;
+      });
+
+      // 6. Animate Station 05: Hexagonal Skill Matrix Crystalline Pulse
+      skillHexPillars.forEach(hex => {
+        const wave = Math.sin(elapsed * 2.0 + hex.phase) * 0.12;
+        hex.mesh.scale.y = hex.baseH + wave;
+      });
+
+      // 7. Animate Floor Conduit ETL Data Particles & Surge Decay
+      if (surgeTimer > 0) {
+        surgeTimer -= dt;
+        if (surgeTimer <= 0 && pipelineParticles) {
+          pipelineParticles.material.size = 0.28;
+          updateThroughputSpeed(conduitSpeedMultiplier);
+        }
+      }
+
+      if (pipelineParticles) {
+        const posAttr = pipelineParticles.geometry.attributes.position;
+        const posArr = posAttr.array;
+        const effectiveMult = conduitSpeedMultiplier * (surgeTimer > 0 ? 3.8 : 1.0);
+
+        for (let i = 0; i < pipelineParticleData.length; i++) {
+          const pd = pipelineParticleData[i];
+          pd.t = (pd.t + pd.speed * effectiveMult * dt) % 1.0;
+          posArr[i * 3] = THREE.MathUtils.lerp(pd.start.x, pd.end.x, pd.t);
+          posArr[i * 3 + 1] = 0.22 + Math.sin(pd.t * Math.PI * 2) * 0.18;
+          posArr[i * 3 + 2] = THREE.MathUtils.lerp(pd.start.z, pd.end.z, pd.t);
+        }
+        posAttr.needsUpdate = true;
+      }
+
+      // 8. Project 3D Coordinates to 2D Screen Badges & Draw Inspector Telemetry Wave
+      updateWorldToScreenLabels();
+      drawInspectorTelemetryCanvas();
+
+      renderer.render(scene, camera);
+    }
+
+    // Start the 3D Observatory on Window Load
+    window.onload = function () {
+      initObservatory3D();
+      animateObservatory();
+    };
+  </script>
 </body>
 </html>
