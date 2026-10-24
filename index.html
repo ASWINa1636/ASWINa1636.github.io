@@ -211,6 +211,7 @@
       user-select: text;
       -webkit-user-select: text;
     }
+      #canvas-container canvas { display: block; touch-action: none; }
   </style>
 </head>
 <body class="bg-obsidian text-slate-200 antialiased selection:bg-amber-500 selection:text-obsidian">
@@ -281,6 +282,12 @@
 
     <!-- Right Action Controls: CAD Wireframe, Surge Simulator, SQL Query Drawer, GitHub -->
     <div class="hud-panel pointer-events-auto rounded-lg p-1.5 flex items-center gap-1.5 sm:gap-2 relative -top-2">
+      <!-- Ambient Music Toggle -->
+      <div class="flex items-center gap-1.5">
+        <button id="btn-mute" onclick="toggleMute()" class="w-7 h-7 rounded-md bg-slate-800/80 hover:bg-slate-700/80 text-emerald-300 border border-slate-700/70 transition-all flex items-center justify-center" title="Play music / Mute (shortcut: M)" aria-label="Play or mute music"><i id="mute-icon" class="fa-solid fa-volume-xmark text-xs text-slate-400"></i></button>
+        <input id="music-vol" type="range" min="0" max="100" value="45" oninput="setMusicVolume(this.value)" class="w-14 sm:w-16 accent-emerald-400 cursor-pointer" title="Music volume" aria-label="Music volume">
+      </div>
+
       <!-- CAD Wireframe / Schematic Toggle -->
       <button id="btn-wireframe" onclick="toggleWireframeMode()" class="px-2.5 py-1.5 rounded-md font-mono text-[11px] font-medium bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/70 transition-all flex items-center gap-1.5" title="Shortcut: [W] Toggle CAD Wireframe / Schematic Mode">
         <i class="fa-solid fa-cube text-cobalt-400"></i>
@@ -900,6 +907,8 @@
       isFlying: true,
       autoOrbit: true,
       orbitSpeed: 0.14,
+      goalActive: false,
+      goal: { radius: 15, theta: 0, phi: Math.PI / 3 },
       spherical: {
         radius: 15,
         theta: 0,
@@ -1621,6 +1630,7 @@
       });
     }
 
+    const _lblVec = new THREE.Vector3();
     function updateWorldToScreenLabels() {
       const halfW = window.innerWidth / 2;
       const halfH = window.innerHeight / 2;
@@ -1630,7 +1640,7 @@
         const badge = floatingBadges[id];
         if (!badge) return;
 
-        const worldVec = new THREE.Vector3(st.coords.x, st.coords.y, st.coords.z);
+        const worldVec = _lblVec.set(st.coords.x, st.coords.y, st.coords.z);
         worldVec.project(camera);
 
         // Hide if behind camera frustum
@@ -1652,7 +1662,7 @@
       // Also update floating 3D BI Matrix banner above Station 02
       const biBanner = document.getElementById('bi-floating-banner');
       if (biBanner) {
-        const biVec = new THREE.Vector3(-13.5, 6.9, -4.0);
+        const biVec = _lblVec.set(-13.5, 6.9, -4.0);
         biVec.project(camera);
         if (biVec.z < 1.0) {
           const bx = (biVec.x * halfW) + halfW;
@@ -1674,6 +1684,7 @@
       let isRightDrag = false;
       let downX = 0, downY = 0;
       let prevX = 0, prevY = 0;
+      let hoverX = 0, hoverY = 0, hoverQueued = false;
 
       domElement.addEventListener('pointerdown', (e) => {
         isPointerDown = true;
@@ -1685,11 +1696,18 @@
       window.addEventListener('pointermove', (e) => {
         // Hover cursor feedback via Raycaster
         if (!isPointerDown) {
-          mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-          mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-          raycaster.setFromCamera(mouse, camera);
-          const hits = raycaster.intersectObjects(clickableMeshes, false);
-          domElement.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+          hoverX = e.clientX; hoverY = e.clientY;
+          if (!hoverQueued) {
+            hoverQueued = true;
+            requestAnimationFrame(() => {
+              hoverQueued = false;
+              mouse.x = (hoverX / window.innerWidth) * 2 - 1;
+              mouse.y = -(hoverY / window.innerHeight) * 2 + 1;
+              raycaster.setFromCamera(mouse, camera);
+              const hits = raycaster.intersectObjects(clickableMeshes, false);
+              domElement.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+            });
+          }
           return;
         }
 
@@ -1724,9 +1742,10 @@
           camState.targetLookAt.copy(camState.currentLookAt);
         } else {
           // Orbit spherical angles around currentLookAt
-          camState.spherical.theta -= dx * 0.0065;
-          camState.spherical.phi = THREE.MathUtils.clamp(
-            camState.spherical.phi - dy * 0.0055,
+          ensureCamGoal();
+          camState.goal.theta -= dx * 0.0065;
+          camState.goal.phi = THREE.MathUtils.clamp(
+            camState.goal.phi - dy * 0.0055,
             0.22,
             Math.PI / 2 - 0.06
           );
@@ -1759,8 +1778,9 @@
           syncSphericalFromCurrentCamera();
           camState.isFlying = false;
         }
-        camState.spherical.radius = THREE.MathUtils.clamp(
-          camState.spherical.radius + e.deltaY * 0.018,
+        ensureCamGoal();
+        camState.goal.radius = THREE.MathUtils.clamp(
+          camState.goal.radius + Math.max(-120, Math.min(120, e.deltaY)) * 0.018,
           6.0,
           56.0
         );
@@ -1770,6 +1790,7 @@
       window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        renderer.setPixelRatio(adaptivePR);
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
@@ -1781,6 +1802,8 @@
         }
         if (e.key >= '0' && e.key <= '5') {
           flyToStation(parseInt(e.key, 10));
+        } else if (e.key.toLowerCase() === 'm') {
+          toggleMusic();
         } else if (e.key.toLowerCase() === 'w') {
           toggleWireframeMode();
         } else if (e.key.toLowerCase() === 's') {
@@ -1793,7 +1816,17 @@
       });
     }
 
+    function ensureCamGoal() {
+      if (!camState.goalActive) {
+        camState.goal.radius = camState.spherical.radius;
+        camState.goal.theta = camState.spherical.theta;
+        camState.goal.phi = camState.spherical.phi;
+        camState.goalActive = true;
+      }
+    }
+
     function syncSphericalFromCurrentCamera() {
+      camState.goalActive = false;
       const offset = new THREE.Vector3().subVectors(camState.currentPos, camState.currentLookAt);
       camState.spherical.radius = Math.max(6, offset.length());
       camState.spherical.theta = Math.atan2(offset.x, offset.z);
@@ -2334,6 +2367,7 @@
      * 15. MAIN ANIMATION & RENDER LOOP
      *************************************************************************/
     let frameCount = 0;
+    let adaptivePR = Math.min(window.devicePixelRatio || 1, 2), goodSeconds = 0;
     let lastFpsTime = performance.now();
 
     function animateObservatory() {
@@ -2348,6 +2382,18 @@
       if (now - lastFpsTime >= 1000) {
         const fpsEl = document.getElementById('fps-counter');
         if (fpsEl) fpsEl.textContent = `${frameCount} FPS`;
+        const fpsNow = frameCount;
+        if (fpsNow < 45 && adaptivePR > 1) {
+          adaptivePR = Math.max(1, adaptivePR - 0.25);
+          renderer.setPixelRatio(adaptivePR);
+          goodSeconds = 0;
+        } else if (fpsNow >= 57) {
+          if (++goodSeconds >= 4 && adaptivePR < Math.min(window.devicePixelRatio || 1, 2)) {
+            adaptivePR = Math.min(Math.min(window.devicePixelRatio || 1, 2), adaptivePR + 0.25);
+            renderer.setPixelRatio(adaptivePR);
+            goodSeconds = 0;
+          }
+        } else goodSeconds = 0;
         frameCount = 0;
         lastFpsTime = now;
       }
@@ -2358,13 +2404,20 @@
         camState.currentPos.lerp(camState.targetPos, lerpAlpha);
         camState.currentLookAt.lerp(camState.targetLookAt, lerpAlpha);
 
-        if (camState.currentPos.distanceTo(camState.targetPos) < 0.08) {
+        if (camState.currentPos.distanceTo(camState.targetPos) < 0.02 && camState.currentLookAt.distanceTo(camState.targetLookAt) < 0.02) {
           syncSphericalFromCurrentCamera();
           camState.isFlying = false;
         }
       } else {
         if (camState.autoOrbit) {
+          camState.goalActive = false;
           camState.spherical.theta += camState.orbitSpeed * dt;
+        } else if (camState.goalActive) {
+          const g = camState.goal, s = camState.spherical;
+          const aRot = 1.0 - Math.exp(-11 * dt), aZoom = 1.0 - Math.exp(-8 * dt);
+          s.theta += (g.theta - s.theta) * aRot;
+          s.phi += (g.phi - s.phi) * aRot;
+          s.radius += (g.radius - s.radius) * aZoom;
         }
         const r = camState.spherical.radius;
         const sinPhi = Math.sin(camState.spherical.phi);
@@ -2486,6 +2539,99 @@
       initObservatory3D();
       animateObservatory();
     };
+  
+    /* ================= AMBIENT MUSIC (generated live with Web Audio, no audio files) ================= */
+    const MusicEngine = (() => {
+      let ctx, master, wet, timer, on = false, muted = false, nextChord = 0, nextArp = 0, step = 0, vol = 0.27;
+      const hz = n => 440 * Math.pow(2, (n - 69) / 12);
+      const CHORDS = [[57, 60, 64, 67, 71], [53, 57, 60, 64, 67], [48, 55, 59, 64, 67], [55, 59, 62, 66, 69]]; // Am9, Fmaj7, Cmaj7, G6
+      const SCALE = [69, 72, 74, 76, 79, 81, 84];
+      function impulse(sec) {
+        const len = ctx.sampleRate * sec, buf = ctx.createBuffer(2, len, ctx.sampleRate);
+        for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
+        return buf;
+      }
+      function init() {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        master = ctx.createGain(); master.gain.value = 0;
+        const comp = ctx.createDynamicsCompressor();
+        const rev = ctx.createConvolver(); rev.buffer = impulse(3.5);
+        wet = ctx.createGain(); wet.gain.value = 0.55;
+        wet.connect(rev); rev.connect(master); master.connect(comp); comp.connect(ctx.destination);
+      }
+      function env(g, t, a, peak, hold, r) {
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(peak, t + a);
+        g.gain.setValueAtTime(peak, t + a + hold);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + r);
+      }
+      function pad(t, notes) {
+        notes.forEach((n, i) => {
+          [-6, 6].forEach(det => {
+            const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+            o.type = 'triangle'; o.frequency.value = hz(n); o.detune.value = det;
+            f.type = 'lowpass'; f.frequency.value = 900;
+            env(g, t, 2.5, 0.05 / (1 + i * 0.25), 4.5, 3.5);
+            o.connect(f); f.connect(g); g.connect(master); g.connect(wet);
+            o.start(t); o.stop(t + 11);
+          });
+        });
+      }
+      function pluck(t, n) {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = hz(n);
+        env(g, t, 0.01, 0.07, 0.05, 1.8);
+        o.connect(g); g.connect(master); g.connect(wet);
+        o.start(t); o.stop(t + 2.2);
+      }
+      function tick() {
+        const now = ctx.currentTime;
+        while (nextChord < now + 1) { pad(nextChord, CHORDS[step % 4]); nextChord += 8; step++; }
+        while (nextArp < now + 1) {
+          if (Math.random() < 0.65) pluck(nextArp, SCALE[Math.floor(Math.random() * SCALE.length)]);
+          nextArp += 0.5 + (Math.random() < 0.3 ? 0.5 : 0);
+        }
+      }
+      return {
+        get on() { return on; },
+        start() {
+          if (!ctx) init();
+          ctx.resume();
+          on = true;
+          nextChord = nextArp = ctx.currentTime + 0.1; step = 0;
+          master.gain.cancelScheduledValues(ctx.currentTime);
+          master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+          master.gain.linearRampToValueAtTime(muted ? 0 : vol, ctx.currentTime + 2);
+          tick(); timer = setInterval(tick, 250);
+        },
+        stop() {
+          on = false; clearInterval(timer);
+          master.gain.cancelScheduledValues(ctx.currentTime);
+          master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+          master.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2);
+          setTimeout(() => { if (!on) ctx.suspend(); }, 1500);
+        },
+        get muted() { return muted; },
+        volume(v) { vol = v; if (on && ctx && !muted) master.gain.linearRampToValueAtTime(v, ctx.currentTime + 0.15); },
+        mute(m) { muted = m; if (on && ctx) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(master.gain.value, ctx.currentTime); master.gain.linearRampToValueAtTime(m ? 0 : vol, ctx.currentTime + 0.2); } }
+      };
+    })();
+
+    function toggleMusic() {
+      if (!MusicEngine.on) { MusicEngine.start(); MusicEngine.mute(false); } else { MusicEngine.stop(); }
+      setMusicIcon();
+    }
+    function setMusicIcon() {
+      const i = document.getElementById('mute-icon'), v = parseInt(document.getElementById('music-vol').value, 10);
+      i.className = 'fa-solid text-xs ' + (!MusicEngine.on ? 'fa-volume-xmark text-slate-400' : MusicEngine.muted || v === 0 ? 'fa-volume-xmark text-red-400' : v < 40 ? 'fa-volume-low' : 'fa-volume-high');
+    }
+    function toggleMute() { if (!MusicEngine.on) { toggleMusic(); return; } MusicEngine.mute(!MusicEngine.muted); setMusicIcon(); }
+    function setMusicVolume(v) {
+      MusicEngine.volume(v / 100 * 0.6);
+      if (!MusicEngine.on) MusicEngine.start();
+      if (MusicEngine.muted) MusicEngine.mute(false);
+      setMusicIcon();
+    }
   </script>
 </body>
 </html>
